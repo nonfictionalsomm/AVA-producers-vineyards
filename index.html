@@ -72,7 +72,7 @@
         .btn-choice-lg {
              padding: 1rem; /* Original padding for 5v5 game */
              font-size: 1rem;
-             /* NEW: Set a consistent height for alignment */
+             /* Set a consistent height for alignment */
              height: 4.5rem; 
              display: flex;
              align-items: center;
@@ -107,7 +107,7 @@
         }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body class="flex items-center justify-center min-h-screen">
 
     <div id="start-modal" class="fixed inset-0 z-50 flex justify-center p-4 modal-backdrop overflow-y-auto">
         <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-3xl w-full text-center transform transition-all my-8">
@@ -148,8 +148,7 @@
         </div>
     </div>
 
-    <div id="game-container" class="w-full max-w-5xl mx-auto hidden">
-        <div class="mb-4">
+    <div id="game-container" class="w-full max-w-5xl mx-auto hidden p-4"> <div class="mb-4">
             <button id="main-menu-btn" class="text-sm text-gray-500 hover:text-gray-800 transition-colors">&larr; Main Menu</button>
         </div>
         
@@ -749,7 +748,7 @@
         ];
 
         // --- CA COUNTY DATABASE ---
-        const countyDataRaw = "Adelaida District, San Luis Obispo; Alexander Valley, Sonoma; Alisos Canyon, Santa Barbara; Alta Mesa, Sacramento; Anderson Valley, Mendocino; Antelope Valley of the California High Desert, Los Angeles, Kern; Arroyo Grande Valley, San Luis Obispo; Arroyo Seco, Monterey; Atlas Peak, Napa; Ballard Canyon, Santa Barbara; Ben Lomond Mountain, Santa Cruz; Benmore Valley, Lake; Bennett Valley, Sonoma; Big Valley District-Lake County, Lake; Borden Ranch, Sacramento, San Joaquin; California Shenandoah Valley, Amador, El Dorado; Calistoga, Napa; Capay Valley, Yolo; Carmel Valley, Monterey; Carneros (Los Carneros), Napa, Sonoma; Central Coast, Alameda, Contra Costa, Monterey, San Benito, San Francisco, San Luis Obispo, San Mateo, Santa Barbara, Santa Clara, Santa Cruz; Chalk Hill, Sonoma; Chalone, Monterey, San Benito; Chiles Valley, Napa; Cienega Valley, San Benito; Clarksburg, Sacramento, Solano, Yolo; Clear Lake, Lake; Clements Hills, San Joaquin; Cole Ranch, Mendocino; Comptche, Mendocino; Contra Costa, Contra Costa; Coombsville, Napa; Cosumnes River, Sacramento; Covelo, Mendocino; Creston District, San Luis Obispo; Crystal Springs of Napa Valley, Napa; Cucamonga Valley, Riverside, San Bernardino; Diablo Grande, Stanislaus; Diamond Mountain District, Napa; Dos Rios, Mendocino; Dry Creek Valley, Sonoma; Dunnigan Hills, Yolo; Eagle Peak Mendocino County, Mendocino; Edna Valley, San Luis Obispo; El Dorado, El Dorado; El Pomar District, San Luis Obispo; Fair Play, El Dorado; Fiddletown, Amador; Fort Ross-Seaview, Sonoma; Fountaingrove District, Sonoma; Gabilan Mountains, Monterey, San Benito; Green Valley of Russian River Valley, Sonoma; Guenoc Valley, Lake; Hames Valley, Monterey; Happy Canyon of Santa Barbara, Santa Barbara; High Valley, Lake; Howell Mountain, Napa; Inwood Valley, Shasta; Jahant, San Joaquin, Sacramento; Kelsey Bench-Lake County, Lake; Knights Valley, Sonoma; Lamorinda, Contra Costa; Leona Valley, Los Angeles; Lime Kiln Valley, San Benito; Livermore Valley, Alameda, Contra Costa; Lodi, Sacramento, San Joaquin; Long Valley-Lake County, Lake; Los Olivos District, Santa Barbara; Madera, Madera, Fresno; Malibu Coast, Los Angeles; Malibu-Newton Canyon, Los Angeles, Ventura; Manton Valley, Shasta, Tehama; McDowell Valley, Mendocino; Mendocino, Mendocino; Mendocino Ridge, Mendocino; Merritt Island, Yolo; Mokelumne River, San Joaquin; Monterey, Monterey; Moon Mountain District Sonoma County, Sonoma; Mt. Harlan, San Benito; Mt. Veeder, Napa; Napa Valley, Napa; North Coast, Napa, Sonoma, Mendocino, Lake, Marin, Solano; North Yuba, Yuba; Northern Sonoma, Sonoma; Oak Knoll District of Napa Valley, Napa; Oakville, Napa; Pacheco Pass, Santa Clara, San Benito; Paicines, San Benito; Palos Verdes Peninsula, Los Angeles; Paso Robles, San Luis Obispo; Paso Robles Estrella District, San Luis Obispo; Paso Robles Geneseo District, San Luis Obispo; Paso Robles Highlands District, San Luis Obispo; Paso Robles Willow Creek District, San Luis Obispo; Petaluma Gap, Sonoma, Marin; Pine Mountain-Cloverdale Peak, Sonoma, Mendocino; Potter Valley, Mendocino; Ramona Valley, San Diego; Red Hills-Lake County, Lake; Redwood Valley, Mendocino; River Junction, San Joaquin; Rockpile, Sonoma; Russian River Valley, Sonoma; Rutherford, Napa; Saddle Rock - Malibu, Los Angeles; Salado Creek, Stanislaus; San Antonio Valley, Monterey; San Bernabe, Monterey; San Benito, San Benito; San Francisco Bay, San Francisco, San Benito, Santa Clara, Santa Cruz, Solano, Alameda, Contra Costa, San Mateo; San Juan Creek, San Luis Obispo; San Lucas, Monterey; San Luis Ray, San Diego; San Luis Obispo Coast, San Luis Obispo; San Miguel District, San Luis Obispo; San Pasqual Valley, San Diego; San Ysidro District, Santa Clara; Santa Clara Valley, Santa Clara; Santa Cruz Mountains, Santa Cruz, San Mateo, Santa Clara; Santa Lucia Highlands, Monterey; Santa Margarita Ranch, San Luis Obispo; Santa Maria Valley, Santa Barbara, San Luis Obispo; Santa Ynez Valley, Santa Barbara; Seiad Valley, Siskiyou; Sierra Foothills, Amador, Calaveras, El Dorado, Mariposa, Nevada, Placer, Tuolumne, Yuba; Sierra Pelona, Los Angeles; Sloughhouse, Sacramento; Solano County Green Valley, Solano; Sonoma Coast, Sonoma; Sonoma Mountain, Sonoma; Sonoma Valley, Sonoma; South Coast, Riverside, San Diego, San Bernardino, Orange, Los Angeles; Spring Mountain District, Napa; Squaw Valley-Miramonte, Fresno; St. Helena, Napa; Sta. Rita Hills, Santa Barbara; Paulsell Valley, Stanislaus; Stags Leap District, Napa; Suisun Valley, Solano; Tehachapi Mountains, Kern; Temecula Valley, Riverside; Templeton Gap District, San Luis Obispo; Tracy Hills, San Joaquin, Stanislaus; Trinity Lakes, Trinity; Upper Lake Valley, Lake; West Sonoma Coast, Sonoma; Wild Horse Valley, Napa, Solano; Winters Highlands, Solano, Yolo; Willow Creek, Humboldt, Trinity; York Mountain, San Luis Obispo; Yorkville Highlands, Mendocino; Yountville, Napa; Yucaipa Valley, San Bernardino";
+        const countyDataRaw = "Adelaida District, San Luis Obispo; Alexander Valley, Sonoma; Alisos Canyon, Santa Barbara; Alta Mesa, Sacramento; Anderson Valley, Mendocino; Antelope Valley of the California High Desert, Los Angeles, Kern; Arroyo Grande Valley, San Luis Obispo; Arroyo Seco, Monterey; Atlas Peak, Napa; Ballard Canyon, Santa Barbara; Ben Lomond Mountain, Santa Cruz; Benmore Valley, Lake; Bennett Valley, Sonoma; Big Valley District-Lake County, Lake; Borden Ranch, Sacramento, San Joaquin; California Shenandoah Valley, Amador, El Dorado; Calistoga, Napa; Capay Valley, Yolo; Carmel Valley, Monterey; Carneros (Los Carneros), Napa, Sonoma; Central Coast, Alameda, Contra Costa, Monterey, San Benito, San Francisco, San Luis Obispo, San Mateo, Santa Barbara, Santa Clara, Santa Cruz; Chalk Hill, Sonoma; Chalone, Monterey, San Benito; Chiles Valley, Napa; Cienega Valley, San Benito; Clarksburg, Sacramento, Solano, Yolo; Clear Lake, Lake; Clements Hills, San Joaquin; Cole Ranch, Mendocino; Comptche, Mendocino; Contra Costa, Contra Costa; Coombsville, Napa; Cosumnes River, Sacramento; Covelo, Mendocino; Creston District, San Luis Obispo; Crystal Springs of Napa Valley, Napa; Cucamonga Valley, Riverside, San Bernardino; Diablo Grande, Stanislaus; Diamond Mountain District, Napa; Dos Rios, Mendocino; Dry Creek Valley, Sonoma; Dunnigan Hills, Yolo; Eagle Peak Mendocino County, Mendocino; Edna Valley, San Luis Obispo; El Dorado, El Dorado; El Pomar District, San Luis Obispo; Fair Play, El Dorado; Fiddletown, Amador; Fort Ross-Seaview, Sonoma; Fountaingrove District, Sonoma; Gabilan Mountains, Monterey, San Benito; Green Valley of Russian River Valley, Sonoma; Guenoc Valley, Lake; Hames Valley, Monterey; Happy Canyon of Santa Barbara, Santa Barbara; High Valley, Lake; Howell Mountain, Napa; Inwood Valley, Shasta; Jahant, San Joaquin, Sacramento; Kelsey Bench-Lake County, Lake; Knights Valley, Sonoma; Lamorinda, Contra Costa; Leona Valley, Los Angeles; Lime Kiln Valley, San Benito; Livermore Valley, Alameda, Contra Costa; Lodi, Sacramento, San Joaquin; Long Valley-Lake County, Lake; Los Olivos District, Santa Barbara; Madera, Madera, Fresno; Malibu Coast, Los Angeles; Malibu-Newton Canyon, Los Angeles, Ventura; Manton Valley, Shasta, Tehama; McDowell Valley, Mendocino; Mendocino, Mendocino; Mendocino Ridge, Mendocino; Merritt Island, Yolo; Mokelumne River, San Joaquin; Monterey, Monterey; Moon Mountain District Sonoma County, Sonoma; Mt. Harlan, San Benito; Mt. Veeder, Napa; Napa Valley, Napa; North Coast, Napa, Sonoma, Mendocino, Lake, Marin, Solano; North Yuba, Yuba; Northern Sonoma, Sonoma; Oak Knoll District of Napa Valley, Napa; Oakville, Napa; Pacheco Pass, Santa Clara, San Benito; Paicines, San Benito; Palos Verdes Peninsula, Los Angeles; Paso Robles, San Luis Obispo; Paso Robles Estrella District, San Luis Obispo; Paso Robles Geneseo District, San Luis Obispo; Paso Robles Highlands District, San Luis Obispo; Paso Robles Willow Creek District, San Luis Obispo; Petaluma Gap, Sonoma, Marin; Pine Mountain-Cloverdale Peak, Sonoma, Mendocino; Potter Valley, Mendocino; Ramona Valley, San Diego; Red Hills-Lake County, Lake; Redwood Valley, Mendocino; River Junction, San Joaquin; Rockpile, Sonoma; Russian River Valley, Sonoma; Rutherford, Napa; Saddle Rock - Malibu, Los Angeles; Salado Creek, Stanislaus; San Antonio Valley, Monterey; San Bernabe, Monterey; San Benito, San Benito; San Francisco Bay, San Francisco, San Benito, Santa Clara, Santa Cruz, Solano, Alameda, Contra Costa, San Mateo; San Juan Creek, San Luis Obispo; San Lucas, Monterey; San Luis Ray, San Diego; San Luis Obispo Coast, San Luis Obispo; San Miguel District, San Luis Obispo; San Pasqual Valley, San Diego; San Ysidro District, Santa Clara; Santa Clara Valley, Santa Clara; Santa Cruz Mountains, Santa Cruz, San Mateo, Santa Clara; Santa Lucia Highlands, Monterey; Santa Margarita Ranch, San Luis Obispo; Santa Maria Valley, Santa Barbara, San Luis Obispo; Santa Ynez Valley, Santa Barbara; Seiad Valley, Siskyou; Sierra Foothills, Amador, Calaveras, El Dorado, Mariposa, Nevada, Placer, Tuolumne, Yuba; Sierra Pelona, Los Angeles; Sloughhouse, Sacramento; Solano County Green Valley, Solano; Sonoma Coast, Sonoma; Sonoma Mountain, Sonoma; Sonoma Valley, Sonoma; South Coast, Riverside, San Diego, San Bernardino, Orange, Los Angeles; Spring Mountain District, Napa; Squaw Valley-Miramonte, Fresno; St. Helena, Napa; Sta. Rita Hills, Santa Barbara; Paulsell Valley, Stanislaus; Stags Leap District, Napa; Suisun Valley, Solano; Tehachapi Mountains, Kern; Temecula Valley, Riverside; Templeton Gap District, San Luis Obispo; Tracy Hills, San Joaquin, Stanislaus; Trinity Lakes, Trinity; Upper Lake Valley, Lake; West Sonoma Coast, Sonoma; Wild Horse Valley, Napa, Solano; Winters Highlands, Solano, Yolo; Willow Creek, Humboldt, Trinity; York Mountain, San Luis Obispo; Yorkville Highlands, Mendocino; Yountville, Napa; Yucaipa Valley, San Bernardino";
         
         const countyData = countyDataRaw.split(';').map(entry => {
             const parts = entry.trim().split(',').map(part => part.trim());
@@ -1220,8 +1219,9 @@
         // --- County Game Functions ---
         
         /**
-         * COUNTY LOGIC (with 30-item pool)
-         * - Populates the grid into #left-column
+         * COUNTY POOL FIX:
+         * This function now builds a smaller pool of 30 counties.
+         * It includes all correct counties and fills the rest with random distractors.
          */
         function startCountyRound() {
             currentCountyRoundData = activeGameData.data[currentRound - 1];
@@ -1237,14 +1237,20 @@
             // --- POOL LOGIC ---
             const maxPoolSize = 30; // Max 30 buttons on screen
             
+            // 1. Get all possible distractors (all counties EXCEPT the correct ones)
             const possibleDistractors = activeGameData.allCounties.filter(county => !correctCountiesSet.has(county));
             shuffleArray(possibleDistractors);
 
+            // 2. Calculate how many distractors we need
             const numDistractorsNeeded = Math.max(0, maxPoolSize - correctCounties.length);
+
+            // 3. Get the distractors
             const distractors = possibleDistractors.slice(0, numDistractorsNeeded);
 
+            // 4. Create the final pool for this round (correct + distractors)
             const roundCountyPool = [...correctCounties, ...distractors];
             shuffleArray(roundCountyPool); // Shuffle them together
+            // --- END POOL LOGIC ---
             
             // Populate grid with the new, smaller pool
             roundCountyPool.forEach(countyName => {
