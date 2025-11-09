@@ -3,96 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sonoma County AVA Game</title>
-    <!-- Load Tailwind CSS -->
+    <title>Sonoma AVA Challenge</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* Custom styles for the game */
+        /* Base styles from the Bordeaux example */
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Lato', sans-serif;
+            background-color: #FDF8F2; /* Creamy background */
+            color: #4B3F3F; /* Dark brown text */
         }
-        /* Style for buttons */
-        .game-btn {
-            @apply w-full p-3 my-2 text-left bg-white border border-gray-300 rounded-lg shadow-sm transition-all duration-150 ease-in-out cursor-pointer;
-            @apply hover:border-blue-500 hover:shadow-md;
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
         }
-        /* Style for selected buttons */
-        .game-btn.selected {
-            @apply ring-2 ring-blue-500 border-blue-500 shadow-lg;
+        /* Using a deep green for the "Sonoma" theme */
+        .theme-text {
+            color: #14532D; /* green-900 */
         }
-        /* Style for correctly matched buttons */
-        .game-btn.correct {
-            @apply bg-green-100 border-green-500 ring-2 ring-green-500 cursor-not-allowed text-gray-700;
-            @apply hover:border-green-500;
+        .theme-bg {
+            background-color: #166534; /* green-800 */
         }
-        /* Style for incorrectly matched buttons (flashes) */
-        .game-btn.incorrect {
-            @apply border-red-500 ring-2 ring-red-500 animate-pulse;
+        .theme-bg-hover:hover {
+            background-color: #14532D; /* green-900 */
         }
-        /* Simple pulse animation for incorrect flash */
-        @keyframes pulse {
-            50% { opacity: .5; }
+        .theme-bg-light {
+            background-color: #F0FDF4; /* green-50 */
         }
-        .animate-pulse {
-            animation: pulse 0.5s ease-in-out;
+        .theme-border-light {
+            border-color: #BBF7D0; /* green-200 */
+        }
+
+        .game-card {
+            background-color: #FFFFFF;
+            border: 1px solid #DED1C1;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .btn-choice {
+            transition: all 0.2s ease-in-out;
+            border: 2px solid #DED1C1;
+            background-color: #fff;
+        }
+        .btn-choice:not(:disabled):hover {
+            background-color: #FDF8F2;
+            transform: translateY(-2px);
+        }
+        .btn-choice.selected {
+            background-color: #E0E7FF; /* Light blue for selected */
+            border-color: #A5B4FC;
+        }
+        .btn-choice.correct {
+            background-color: #D1FAE5; /* Green for correct */
+            border-color: #6EE7B7;
+            color: #065F46;
+            cursor: not-allowed;
+        }
+        .btn-choice.incorrect {
+            animation: shake 0.5s;
+            background-color: #FEE2E2; /* Red for incorrect */
+            border-color: #FCA5A5;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
         }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+<body class="flex items-center justify-center min-h-screen p-4">
 
-    <div class="w-full max-w-4xl mx-auto bg-white rounded-xl shadow-2xl p-6 md:p-10">
-        
-        <!-- Game Header -->
-        <div class="mb-6 pb-4 border-b border-gray-200">
-            <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Sonoma AVA Challenge</h1>
-            <div class="flex justify-between items-center text-lg">
-                <div class="font-semibold text-gray-700">
-                    Round: <span id="round-display" class="text-blue-600">1 / 20</span>
-                </div>
-                <div class="font-semibold text-gray-700">
-                    Score: <span id="score-display" class="text-green-600">0</span>
-                </div>
+    <!-- Start Game Modal -->
+    <div id="start-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full text-center transform transition-all">
+            <h2 class="text-4xl font-bold mb-4 theme-text">Sonoma AVA Challenge</h2>
+            <p class="text-lg mb-6 text-left text-gray-700">Test your knowledge of Sonoma County's Producers, Vineyards, and AVAs.</p>
+            <div class="text-left space-y-3 mb-8 theme-bg-light p-4 rounded-lg border theme-border-light">
+                <p><strong class="theme-text">GOAL:</strong> Match the items in the left column to the correct AVA in the right column.</p>
+                <p><strong class="theme-text">SCORING:</strong></p>
+                <ul class="list-disc list-inside pl-4 text-gray-600">
+                    <li><span class="font-bold text-green-700">+2 points</span> for a correct match on the first try.</li>
+                    <li><span class="font-bold text-green-700">+1 point</span> for a correct match on subsequent tries.</li>
+                    <li><span class="font-bold text-red-700">-1 point</span> for an incorrect match.</li>
+                </ul>
             </div>
-            <p id="round-title" class="text-center text-xl font-medium text-gray-600 mt-2">Match the Producer to its AVA</p>
+            <button id="start-game-btn" class="w-full theme-bg text-white font-bold py-3 px-4 rounded-lg theme-bg-hover transition-colors text-xl">Start Game</button>
         </div>
-
-        <!-- Game Area -->
-        <div id="game-board" class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
-            <!-- Left Column: Producers / Vineyards -->
-            <div id="left-column">
-                <!-- Buttons will be injected here -->
-            </div>
-            <!-- Right Column: AVAs -->
-            <div id="right-column">
-                <!-- Buttons will be injected here -->
-            </div>
-        </div>
-
-        <!-- Game Footer -->
-        <div class="mt-8 text-center">
-            <button id="next-round-btn" class_="hidden bg-blue-600 text-white font-bold py-3 px-8 rounded-lg shadow-md hover:bg-blue-700 transition-all duration-200 text-lg">
-                Next Round
-            </button>
-        </div>
-
     </div>
 
-    <!-- End Game Modal -->
-    <div id="end-game-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full text-center">
-            <h2 class="text-3xl font-bold text-gray-800 mb-4">Game Over!</h2>
-            <p class="text-xl text-gray-700 mb-2">Your Final Score:</p>
-            <p id="final-score" class="text-5xl font-bold text-blue-600 mb-6">0%</p>
-            <p id="final-feedback" class="text-lg text-gray-600 mb-8">Great job!</p>
-            <button id="play-again-btn" class="bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow-md hover:bg-green-700 transition-all duration-200 text-lg">
-                Play Again
-            </button>
+    <!-- Main Game Container -->
+    <div id="game-container" class="w-full max-w-5xl mx-auto hidden">
+        <div class="text-center mb-6">
+            <h1 class="text-4xl md:text-5xl font-bold theme-text">Sonoma AVA Master</h1>
+            <p class="text-lg text-gray-600 mt-2">Producer & Vineyard Challenge</p>
+        </div>
+
+        <!-- Score and Round Info -->
+        <div class="flex justify-between items-center mb-6 p-4 rounded-lg theme-bg-light text-green-900 game-card">
+            <div class="text-center w-1/2">
+                <h3 class="text-xl font-bold">Round</h3>
+                <p id="round-info" class="text-2xl font-semibold">1 / 20</p>
+            </div>
+            <div class="border-l border-gray-300 h-12"></div>
+            <div class="text-center w-1/2">
+                <h3 class="text-xl font-bold">Score</h3>
+                <p id="score-info" class="text-2xl font-semibold">0</p>
+            </div>
+        </div>
+
+        <!-- Main Game Area -->
+        <div class="game-card rounded-lg p-6 md:p-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+                <!-- Left Column -->
+                <div>
+                    <h3 id="column-title" class="text-2xl font-bold text-center mb-4 theme-text">Producers</h3>
+                    <div id="left-column" class="flex flex-col space-y-3">
+                        <!-- Left buttons will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div>
+                    <h3 class="text-2xl font-bold text-center mb-4 theme-text">AVAs</h3>
+                    <div id="right-column" class="flex flex-col space-y-3">
+                        <!-- Right buttons will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center transform transition-all scale-95 opacity-0">
+            <h2 class="text-4xl font-bold mb-4 text-green-700">Round Complete!</h2>
+            <button id="next-round-btn" class="w-full theme-bg text-white font-bold py-3 px-4 rounded-lg theme-bg-hover transition-colors text-lg">Next Round</button>
+        </div>
+    </div>
+    
+    <!-- Game Over Modal -->
+    <div id="game-over-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center transform transition-all scale-95 opacity-0">
+            <h2 class="text-4xl font-bold mb-4 theme-text">Game Over!</h2>
+            <p id="final-score-message" class="text-3xl font-bold mb-4 theme-text"></p>
+            <div class="theme-bg-light p-4 rounded-lg mb-6">
+                <p class="text-lg text-left clear-both">Final Score: <span id="final-score" class="font-bold float-right">0</span></p>
+                <p class="text-lg text-left mt-1 clear-both">Percentage: <span id="final-percentage" class="font-bold float-right">0%</span></p>
+            </div>
+            <button id="play-again-btn" class="w-full theme-bg text-white font-bold py-3 px-4 rounded-lg theme-bg-hover transition-colors text-lg">Play Again</button>
         </div>
     </div>
 
     <script>
-        // --- DATA FROM SONOMA COUNTY COMPENDIUM ---
-
+        // --- UPDATED SONOMA DATABASE ---
         const producersData = [
             { name: "Alexander Valley Vineyards", ava: "Alexander Valley AVA" },
             { name: "Jordan", ava: "Alexander Valley AVA" },
@@ -100,9 +169,11 @@
             { name: "Stonestreet", ava: "Alexander Valley AVA" },
             { name: "Rodney Strong", ava: "Alexander Valley AVA" },
             { name: "Matanzas Creek", ava: "Bennett Valley AVA" },
+            { name: "Bevan", ava: "Bennett Valley AVA" },
             { name: "Chalk Hill Estate", ava: "Chalk Hill AVA" },
-            { name: "A.Raffanelli", ava: "Dry Creek Valley AVA" },
-            { name: "Ridge-Lytton Estate", ava: "Dry Creek Valley AVA" },
+            { name: "A. Raffanelli", ava: "Dry Creek Valley AVA" },
+            { name: "Armida", ava: "Dry Creek Valley AVA" },
+            { name: "Michel-Schlumberger", ava: "Dry Creek Valley AVA" },
             { name: "Failla", ava: "Fort Ross - Seaview AVA" },
             { name: "Flowers", ava: "Fort Ross - Seaview AVA" },
             { name: "Red Car", ava: "Fort Ross - Seaview AVA" },
@@ -110,6 +181,7 @@
             { name: "Petrichor Estate", ava: "Fountaingrove District AVA" },
             { name: "Dutton Estate", ava: "Green Valley of the Russian River Valley AVA" },
             { name: "Dutton-Goldfield", ava: "Green Valley of the Russian River Valley AVA" },
+            { name: "Iron Horse Vineyards", ava: "Green Valley of the Russian River Valley AVA" },
             { name: "Anakota", ava: "Knights Valley AVA" },
             { name: "Beringer", ava: "Knights Valley AVA" },
             { name: "Peter Michael", ava: "Knights Valley AVA" },
@@ -118,7 +190,7 @@
             { name: "Etude", ava: "Los Carneros AVA (Sonoma)" },
             { name: "Poseidon", ava: "Los Carneros AVA (Sonoma)" },
             { name: "Truchard", ava: "Los Carneros AVA (Sonoma)" },
-            { name: "E & J Gallo", ava: "Northern Sonoma AVA" },
+            { name: "Amapola Creek", ava: "Moon Mountain District Sonoma County AVA" },
             { name: "Keller Estate", ava: "Petaluma Gap AVA" },
             { name: "Captûre Wines", ava: "Pine Mountain–Cloverdale Peak AVA" },
             { name: "Imagery Estate Winery", ava: "Pine Mountain–Cloverdale Peak AVA" },
@@ -126,24 +198,37 @@
             { name: "Joseph Swan", ava: "Russian River Valley AVA" },
             { name: "Rochioli", ava: "Russian River Valley AVA" },
             { name: "Williams-Seylem", ava: "Russian River Valley AVA" },
+            { name: "Kistler", ava: "Russian River Valley AVA" },
+            { name: "Sonoma-Cutrer", ava: "Sonoma Coast AVA" },
             { name: "Benziger", ava: "Sonoma Mountain AVA" },
             { name: "Laurel Glen", ava: "Sonoma Mountain AVA" },
             { name: "Buena Vista Winery", ava: "Sonoma Valley AVA" },
             { name: "Hanzell", ava: "Sonoma Valley AVA" },
-            { name: "Littorai", ava: "West Sonoma Coast AVA" }
+            { name: "Littorai", ava: "West Sonoma Coast AVA" },
+            { name: "Peay Vineyards", ava: "West Sonoma Coast AVA" },
+            { name: "Hirsch Vineyards", ava: "West Sonoma Coast AVA" },
+            { name: "DuMOL", ava: "West Sonoma Coast AVA" }
         ];
 
         const vineyardsData = [
+            { name: "Geyserville", ava: "Alexander Valley AVA" },
+            { name: "Robert Young Estate", ava: "Alexander Valley AVA" },
             { name: "Dry Stack Vineyard", ava: "Bennett Valley AVA" },
             { name: "Simpatico Ranch Vineyard", ava: "Bennett Valley AVA" },
             { name: "Clajeaux Vineyard", ava: "Chalk Hill AVA" },
+            { name: "Trinité Estate", ava: "Chalk Hill AVA" },
             { name: "Teldeschi Vineyard", ava: "Dry Creek Valley AVA" },
+            { name: "Ridge Lytton Springs", ava: "Dry Creek Valley AVA" },
             { name: "Fort Ross Vineyard", ava: "Fort Ross - Seaview AVA" },
+            { name: "Martinelli Vineyard", ava: "Fort Ross - Seaview AVA" },
             { name: "Fountain Grove Vineyard", ava: "Fountaingrove District AVA" },
             { name: "Kick Ranch Vineyard", ava: "Fountaingrove District AVA" },
-            { name: "Iron Horse Vineyards", ava: "Green Valley of the Russian River Valley AVA" },
             { name: "Keefer Ranch", ava: "Green Valley of the Russian River Valley AVA" },
+            { name: "Morelli Lane Vineyard", ava: "Green Valley of the Russian River Valley AVA" },
+            { name: "Charles Heintz", ava: "Green Valley of the Russian River Valley AVA" },
+            { name: "Knights Bridge Vineyard", ava: "Knights Valley AVA" },
             { name: "Stanly Ranch", ava: "Los Carneros AVA (Sonoma)" },
+            { name: "Sangiacomo Vineyard", ava: "Los Carneros AVA (Sonoma)" },
             { name: "Monte Rosso Vineyard", ava: "Moon Mountain District Sonoma County AVA" },
             { name: "Montecillo Vineyard", ava: "Moon Mountain District Sonoma County AVA" },
             { name: "Ambassador’s 1953 Vineyard", ava: "Moon Mountain District Sonoma County AVA" },
@@ -156,16 +241,17 @@
             { name: "Rocky Ridge Vineyard", ava: "Rockpile AVA" },
             { name: "Rockpile Vineyard", ava: "Rockpile AVA" },
             { name: "Ritchie Vineyard", ava: "Russian River Valley AVA" },
+            { name: "Jackass Hill Vineyard", ava: "Russian River Valley AVA" },
             { name: "Coastlands Vineyard", ava: "Sonoma Coast AVA" },
             { name: "Marcassin Vineyard", ava: "Sonoma Coast AVA" },
-            { name: "Occidental Vineyard", ava: "Sonoma Coast AVA" },
+            { name: "Occidental Vineyard", ava: "West Sonoma Coast AVA" },
             { name: "Pickberry Vineyard", ava: "Sonoma Mountain AVA" },
             { name: "Van der Kamp Vineyard", ava: "Sonoma Mountain AVA" },
             { name: "Bedrock Vineyard", ava: "Sonoma Valley AVA" },
             { name: "Durell Vineyard", ava: "Sonoma Valley AVA" },
             { name: "Pagani Ranch", ava: "Sonoma Valley AVA" },
-            { name: "Hirsch Vineyards", ava: "West Sonoma Coast AVA" },
-            { name: "Peay Vineyards", ava: "West Sonoma Coast AVA" }
+            { name:img: "Peay Estate Vineyard", ava: "West Sonoma Coast AVA" },
+            { name: "B.A. Thieriot Vineyard", ava: "West Sonoma Coast AVA" }
         ];
 
         // --- GAME STATE ---
@@ -181,23 +267,22 @@
         let firstAttemptMap = new Map();
 
         // --- DOM ELEMENTS ---
-        const roundDisplay = document.getElementById('round-display');
-        const scoreDisplay = document.getElementById('score-display');
-        const roundTitle = document.getElementById('round-title');
+        const gameContainer = document.getElementById('game-container');
+        const startModal = document.getElementById('start-modal');
+        const startGameBtn = document.getElementById('start-game-btn');
+        const scoreInfo = document.getElementById('score-info');
+        const roundInfo = document.getElementById('round-info');
+        const columnTitle = document.getElementById('column-title');
         const leftColumn = document.getElementById('left-column');
         const rightColumn = document.getElementById('right-column');
+        const successModal = document.getElementById('success-modal');
+        const gameOverModal = document.getElementById('game-over-modal');
         const nextRoundBtn = document.getElementById('next-round-btn');
-        const endGameModal = document.getElementById('end-game-modal');
-        const finalScoreEl = document.getElementById('final-score');
-        const finalFeedbackEl = document.getElementById('final-feedback');
         const playAgainBtn = document.getElementById('play-again-btn');
 
         // --- UTILITY FUNCTIONS ---
         
-        /**
-         * Shuffles an array in place.
-         * @param {Array} array The array to shuffle.
-         */
+        /** Shuffles an array in place. */
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -205,10 +290,7 @@
             }
         }
 
-        /**
-         * Selects 5 unique items from a data source for the round.
-         * Ensures no duplicate AVAs.
-         */
+        /** Selects 5 unique items from a data source for the round. */
         function getRoundData() {
             // Determine data source based on round number
             // Rounds 1-5, 11-15: Producers
@@ -217,13 +299,12 @@
             let dataSource;
             if (roundGroup === 0 || roundGroup === 2) {
                 dataSource = producersData;
-                roundTitle.textContent = "Match the Producer to its AVA";
+                columnTitle.textContent = "Producers";
             } else {
                 dataSource = vineyardsData;
-                roundTitle.textContent = "Match the Vineyard to its AVA";
+                columnTitle.textContent = "Vineyards";
             }
 
-            // Shuffle the data source to get random items
             const shuffledData = [...dataSource];
             shuffleArray(shuffledData);
 
@@ -239,27 +320,80 @@
                     break;
                 }
             }
-
+            
             // Fallback in case we don't have 5 items with unique AVAs (unlikely with this data)
-            while (roundItems.length < itemsPerRound && shuffledData.length > 0) {
-                 const item = shuffledData.pop();
-                 if (!roundItems.find(i => i.name === item.name)) {
-                    roundItems.push(item);
-                 }
+            // This is a safeguard, but with the current data, it's rarely needed.
+            if (roundItems.length < itemsPerRound) {
+                const remainingData = [...dataSource].filter(item => !roundItems.find(i => i.name === item.name));
+                shuffleArray(remainingData);
+                for (const item of remainingData) {
+                    if (roundItems.length < itemsPerRound) {
+                         roundItems.push(item);
+                    } else {
+                        break;
+                    }
+                }
             }
 
-            // Prepare left and right column data
+
             const leftData = roundItems.map(item => ({ name: item.name, ava: item.ava }));
-            const rightData = roundItems.map(item => item.ava);
+            // Ensure the right column has unique AVAs from the selected items
+            const rightDataAVAs = [...new Set(roundItems.map(item => item.ava))];
+            
+            // If by chance (due to fallback) we have fewer than 5 unique AVAs,
+            // we must ensure the left and right columns still match in number.
+            // This logic simplifies to just using the AVAs from the selected items.
+            const rightData = [...rightDataAVAs];
+            
+            // This scenario might happen if the fallback adds items with duplicate AVAs.
+            // To maintain the 5v5 game, we'll ensure the right column has 5 unique AVAs
+            // even if the left column has duplicates.
+            // Let's re-ensure the right column *only* contains the unique AVAs from the left column.
+            const uniqueAVAs = Array.from(new Set(leftData.map(item => item.ava)));
+            shuffleArray(uniqueAVAs);
+            
+            // And now we must ensure the *left* column items only map to *these* AVAs.
+            // The original logic is better: get 5 items with 5 unique AVAs.
+            // The problem is the fallback. Let's fix the getRoundData logic.
+
+            // --- REVISED getRoundData logic ---
+            avasInRound.clear();
+            roundItems.length = 0;
+            const shuffledSource = [...dataSource];
+            shuffleArray(shuffledSource);
+
+            for (const item of shuffledSource) {
+                if (!avasInRound.has(item.ava)) {
+                    roundItems.push(item);
+                    avasInRound.add(item.ava);
+                }
+                if (roundItems.length === itemsPerRound) {
+                    break;
+                }
+            }
+            
+            // If we *still* don't have 5 (e.g., small data source), we must adjust.
+            // For this game, we'll assume the data source is large enough.
+            // The current data IS large enough.
+
+            const finalLeftData = roundItems.map(item => ({ name: item.name, ava: item.ava }));
+            const finalRightData = roundItems.map(item => item.ava); // AVAs are guaranteed unique here
 
             // Shuffle both columns independently
-            shuffleArray(leftData);
-            shuffleArray(rightData);
+            shuffleArray(finalLeftData);
+            shuffleArray(finalRightData);
 
-            return { leftData, rightData };
+            return { leftData: finalLeftData, rightData: finalRightData };
         }
 
         // --- GAME LOGIC ---
+
+        function initGame() {
+            currentRound = 1;
+            totalScore = 0;
+            maxPossibleScore = 0;
+            startRound();
+        }
 
         function startRound() {
             // Reset round state
@@ -269,28 +403,25 @@
             firstAttemptMap.clear();
             leftColumn.innerHTML = '';
             rightColumn.innerHTML = '';
-            nextRoundBtn.classList.add('hidden');
 
             // Update displays
-            roundDisplay.textContent = `${currentRound} / ${totalRounds}`;
-            scoreDisplay.textContent = totalScore;
+            roundInfo.textContent = `${currentRound} / ${totalRounds}`;
+            scoreInfo.textContent = totalScore;
 
-            // Get data for the round
             const { leftData, rightData } = getRoundData();
             
-            // Increase max possible score for percentage calculation
+            // Max score is 5 items * 2 points/item
             maxPossibleScore += (itemsPerRound * 2);
 
             // Populate left column
             leftData.forEach(item => {
                 const btn = document.createElement('button');
-                btn.className = 'game-btn';
+                btn.className = 'btn-choice w-full text-left p-4 rounded-lg font-semibold';
                 btn.textContent = item.name;
                 btn.dataset.name = item.name;
                 btn.dataset.ava = item.ava;
                 btn.addEventListener('click', () => handleLeftClick(btn, item.name, item.ava));
                 leftColumn.appendChild(btn);
-                
                 // Initialize attempt tracking for this item
                 firstAttemptMap.set(item.name, true);
             });
@@ -298,7 +429,7 @@
             // Populate right column
             rightData.forEach(ava => {
                 const btn = document.createElement('button');
-                btn.className = 'game-btn';
+                btn.className = 'btn-choice w-full text-left p-4 rounded-lg font-semibold';
                 btn.textContent = ava;
                 btn.dataset.ava = ava;
                 btn.addEventListener('click', () => handleRightClick(btn, ava));
@@ -309,11 +440,10 @@
         function handleLeftClick(element, name, ava) {
             if (element.classList.contains('correct')) return;
 
-            // Deselect previous left button if one was selected
+            // Deselect previous left button
             if (selectedLeft && selectedLeft.element !== element) {
                 selectedLeft.element.classList.remove('selected');
             }
-
             // Toggle selection
             if (selectedLeft && selectedLeft.element === element) {
                 selectedLeft.element.classList.remove('selected');
@@ -322,18 +452,16 @@
                 element.classList.add('selected');
                 selectedLeft = { element, name, ava };
             }
-
             checkMatch();
         }
 
         function handleRightClick(element, ava) {
             if (element.classList.contains('correct')) return;
 
-             // Deselect previous right button if one was selected
+            // Deselect previous right button
             if (selectedRight && selectedRight.element !== element) {
                 selectedRight.element.classList.remove('selected');
             }
-
             // Toggle selection
             if (selectedRight && selectedRight.element === element) {
                 selectedRight.element.classList.remove('selected');
@@ -342,7 +470,6 @@
                 element.classList.add('selected');
                 selectedRight = { element, ava };
             }
-
             checkMatch();
         }
 
@@ -356,8 +483,6 @@
             if (selectedLeft.ava === selectedRight.ava) {
                 // --- CORRECT MATCH ---
                 matchesMade++;
-
-                // Apply correct styling and disable
                 leftBtn.classList.remove('selected');
                 rightBtn.classList.remove('selected');
                 leftBtn.classList.add('correct');
@@ -365,31 +490,23 @@
                 leftBtn.disabled = true;
                 rightBtn.disabled = true;
 
-                // Update score
                 if (isFirstAttempt) {
                     totalScore += 2;
                 } else {
                     totalScore += 1;
                 }
-                scoreDisplay.textContent = totalScore;
+                scoreInfo.textContent = totalScore;
                 
                 // Check if round is over
                 if (matchesMade === itemsPerRound) {
-                    if (currentRound === totalRounds) {
-                        setTimeout(endGame, 500);
-                    } else {
-                        nextRoundBtn.classList.remove('hidden');
-                    }
+                    setTimeout(showSuccessModal, 500);
                 }
             } else {
                 // --- INCORRECT MATCH ---
-                totalScore -= 1;
-                scoreDisplay.textContent = totalScore;
-
+                totalScore = Math.max(0, totalScore - 1); // Don't go below 0
+                scoreInfo.textContent = totalScore;
                 // Mark this item as no longer the first attempt
                 firstAttemptMap.set(selectedLeft.name, false);
-
-                // Flash red
                 flashIncorrect(leftBtn, rightBtn);
             }
 
@@ -407,51 +524,81 @@
         function flashIncorrect(btn1, btn2) {
             btn1.classList.add('incorrect');
             btn2.classList.add('incorrect');
-
             setTimeout(() => {
                 btn1.classList.remove('incorrect');
                 btn2.classList.remove('incorrect');
             }, 500);
         }
 
-        function nextRound() {
-            currentRound++;
-            startRound();
+        function showSuccessModal() {
+            // Check if game is over *before* showing success modal
+            if (currentRound === totalRounds) {
+                setTimeout(endGame, 200); // Go straight to end game
+                return;
+            }
+
+            successModal.classList.remove('hidden');
+            setTimeout(() => {
+                successModal.firstElementChild.classList.remove('scale-95', 'opacity-0');
+            }, 10);
+        }
+
+        function hideSuccessModal() {
+            successModal.firstElementChild.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                successModal.classList.add('hidden');
+                currentRound++;
+                startRound();
+            }, 200);
         }
 
         function endGame() {
             const percentage = Math.max(0, Math.round((totalScore / maxPossibleScore) * 100));
-            finalScoreEl.textContent = `${percentage}%`;
+            const finalScoreEl = document.getElementById('final-score');
+            const finalPercentageEl = document.getElementById('final-percentage');
+            const finalMessageEl = document.getElementById('final-score-message');
 
             let feedback = "";
             if (percentage >= 90) {
-                feedback = "Expert! You truly know your Sonoma AVAs.";
+                feedback = "AVA Master!";
             } else if (percentage >= 70) {
-                feedback = "Great job! You have a solid knowledge of Sonoma.";
+                feedback = "Great job!";
             } else if (percentage >= 50) {
-                feedback = "Not bad! A little more study and you'll be a pro.";
+                feedback = "Solid effort!";
             } else {
-                feedback = "Good start! Keep playing to learn more about these fantastic AVAs.";
+                feedback = "Good start!";
             }
-            finalFeedbackEl.textContent = feedback;
+            
+            finalScoreEl.textContent = totalScore;
+            finalPercentageEl.textContent = `${percentage}%`;
+            finalMessageEl.textContent = feedback;
 
-            endGameModal.classList.remove('hidden');
+            // Hide success modal if it's somehow open
+            successModal.classList.add('hidden');
+
+            gameOverModal.classList.remove('hidden');
+            setTimeout(() => {
+                gameOverModal.firstElementChild.classList.remove('scale-95', 'opacity-0');
+            }, 10);
         }
 
-        function resetGame() {
-            currentRound = 1;
-            totalScore = 0;
-            maxPossibleScore = 0;
-            endGameModal.classList.add('hidden');
-            startRound();
+        function hideGameOver() {
+            gameOverModal.firstElementChild.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                gameOverModal.classList.add('hidden');
+                initGame(); // Reset and start game over
+            }, 200);
         }
 
         // --- EVENT LISTENERS ---
-        nextRoundBtn.addEventListener('click', nextRound);
-        playAgainBtn.addEventListener('click', resetGame);
-
-        // Start the game on load
-        document.addEventListener('DOMContentLoaded', startRound);
+        startGameBtn.addEventListener('click', () => {
+            startModal.classList.add('hidden');
+            gameContainer.classList.remove('hidden');
+            initGame();
+        });
+        
+        nextRoundBtn.addEventListener('click', hideSuccessModal);
+        playAgainBtn.addEventListener('click', hideGameOver);
 
     </script>
 </body>
