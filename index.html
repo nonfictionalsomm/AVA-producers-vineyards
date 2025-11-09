@@ -72,6 +72,10 @@
         .btn-choice-lg {
              padding: 1rem; /* Original padding for 5v5 game */
              font-size: 1rem;
+             /* NEW: Set a consistent height for alignment */
+             height: 4.5rem; 
+             display: flex;
+             align-items: center;
         }
         .btn-choice:not(:disabled):hover {
             background-color: #FDF8F2;
@@ -106,7 +110,8 @@
 <body class="flex items-center justify-center min-h-screen p-4">
 
     <div id="start-modal" class="fixed inset-0 z-50 flex justify-center p-4 modal-backdrop overflow-y-auto">
-        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-3xl w-full text-center transform transition-all my-8"> <h2 class="text-4xl font-bold mb-4 theme-text">AVA Challenge</h2>
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-3xl w-full text-center transform transition-all my-8">
+            <h2 class="text-4xl font-bold mb-4 theme-text">AVA Challenge</h2>
             <p class="text-lg mb-6 text-left text-gray-700">Test your knowledge by matching Producers, Vineyards, or Counties to their correct AVAs.</p>
             <div class="text-left space-y-3 mb-8 theme-bg-light p-4 rounded-lg border theme-border-light">
                 <p><strong class="theme-text">GOAL:</strong> Match the items in the left column to the correct AVA in the right column. Or, find all counties for a given AVA.</p>
@@ -166,7 +171,7 @@
         </div>
 
         <div class="game-card rounded-lg p-6 md:p-8">
-            <div id="game-grid" class="grid grid-cols-2 gap-4 md:gap-10">
+            <div id="game-grid" class="grid grid-cols-2 gap-x-4 md:gap-x-10 gap-y-3">
                 <div id="left-col-wrapper">
                     <h3 id="column-title" class="text-2xl font-bold text-center mb-4 theme-text">Producers</h3>
                     <div id="left-column" class="flex flex-col space-y-3">
@@ -197,7 +202,8 @@
                 <p class="text-lg text-left clear-both">Final Score: <span id="final-score" class="font-bold float-right">0</span></p>
                 <p class="text-lg text-left mt-1 clear-both">Percentage: <span id="final-percentage" class="font-bold float-right">0%</span></p>
             </div>
-            <button id="play-again-btn" class="w-full theme-bg text-white font-bold py-3 px-4 rounded-lg theme-bg-hover transition-colors text-lg">Play Again</button>
+            <button id="play-again-btn-restart" class="w-full theme-bg text-white font-bold py-3 px-4 rounded-lg theme-bg-hover transition-colors text-lg">Play Again</button>
+            <button id="play-again-btn-menu" class="w-full text-gray-500 font-bold py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors text-lg mt-2">Main Menu</button>
         </div>
     </div>
 
@@ -402,7 +408,7 @@
             { name: "Cliff Lede", ava: "Stags Leap District AVA" },
             { name: "Clos du Val", ava: "Stags Leap District AVA" },
             { name: "Futo 5500", ava: "Stags Leap District AVA" },
-            { name:im: "Hartwell", ava: "Stags Leap District AVA" },
+            { name: "Hartwell", ava: "Stags Leap District AVA" },
             { name: "Odette", ava: "Stags Leap District AVA" },
             { name: "Pine Ridge", ava: "Stags Leap District AVA" },
             { name: "Poetry", ava: "Stags Leap District AVA" },
@@ -720,7 +726,7 @@
             { name: "McFadden Family Vineyard & Farm", ava: "Potter Valley AVA" },
             { name: "Vecino Vineyards", ava: "Potter Valley AVA" },
             { name: "Emme Wines", ava: "Redwood Valley AVA" },
-            { name:E: "Frey Vineyards", ava: "Redwood Valley AVA" },
+            { name: "Frey Vineyards", ava: "Redwood Valley AVA" },
             { name: "Lolonis Vineyard", ava: "Redwood Valley AVA" },
             { name: "Hawks Butte Ranch", ava: "Yorkville Highlands AVA" },
             { name: "Weir Vineyard", ava: "Yorkville Highlands AVA" },
@@ -868,7 +874,9 @@
         const gameOverTitle = document.getElementById('game-over-title');
         const finalScoreMessage = document.getElementById('final-score-message');
         const nextRoundBtn = document.getElementById('next-round-btn');
-        const playAgainBtn = document.getElementById('play-again-btn');
+        // NEW: Renamed and added new button
+        const playAgainBtn = document.getElementById('play-again-btn-restart');
+        const playAgainMenuBtn = document.getElementById('play-again-btn-menu');
 
         // --- UTILITY FUNCTIONS ---
         
@@ -888,8 +896,10 @@
             
             // Apply theme to titles
             [gameTitle, columnTitle, columnAvaTitle, gameOverTitle, finalScoreMessage].forEach(el => {
-                el.classList.remove(...otherThemes);
-                el.classList.add(themeClass);
+                if (el) { // Check if el exists, as titles are hidden/shown
+                    el.classList.remove(...otherThemes);
+                    el.classList.add(themeClass);
+                }
             });
             
             // Apply theme to modal buttons
@@ -909,6 +919,7 @@
             const otherBg = Object.values(buttonThemes).map(t => t[0]).filter(c => c !== bgClass);
             const otherHover = Object.values(buttonThemes).map(t => t[1]).filter(c => c !== hoverClass);
 
+            // Apply to Next Round and Play Again (Restart) buttons
             [nextRoundBtn, playAgainBtn].forEach(btn => {
                 btn.classList.remove(...otherBg, ...otherHover);
                 btn.classList.add(bgClass, hoverClass);
@@ -931,34 +942,58 @@
             initGame();
         }
         
+        /**
+         * LAYOUT FIX:
+         * - 'ava' mode now hides the #left-column and #right-column divs
+         * - 'ava' mode will populate buttons directly into #game-grid
+         * - 'county' mode hides the column *wrappers* and uses #game-grid as a single column
+         */
         function setupGameUI(gameType) {
              if (gameType === 'county') {
-                gameGrid.classList.remove('grid-cols-2', 'md:gap-10');
+                // --- COUNTY LAYOUT ---
+                // Use game-grid as a single column
+                gameGrid.classList.remove('grid-cols-2', 'md:gap-x-10', 'gap-y-3');
                 gameGrid.classList.add('grid-cols-1');
-                leftColWrapper.classList.remove('hidden'); // Use this for the prompt
-                rightColWrapper.classList.remove('hidden');
+                
+                // Show left wrapper (for prompt), hide right wrapper
+                leftColWrapper.classList.remove('hidden');
+                rightColWrapper.classList.add('hidden'); 
                 
                 columnTitle.classList.add('text-3xl'); // Make prompt bigger
-                columnTitle.textContent = "Loading AVA..."; // Will be set in startRound
+                columnTitle.textContent = "Loading AVA...";
                 
-                columnAvaTitle.classList.add('hidden'); // Hide 5v5 title
-                leftColumn.classList.add('hidden'); // Hide 5v5 left column
+                // Show left-column (for county grid), hide ava title
+                leftColumn.classList.remove('hidden'); 
+                columnAvaTitle.classList.add('hidden'); 
                 
-                rightColumn.classList.remove('flex', 'flex-col', 'space-y-3');
-                rightColumn.classList.add('grid', 'grid-cols-3', 'sm:grid-cols-4', 'md:grid-cols-6', 'gap-2');
-            } else { // 'ava' game type
-                gameGrid.classList.add('grid-cols-2', 'md:gap-10');
+                // Configure left-column as the county grid
+                leftColumn.classList.remove('flex', 'flex-col', 'space-y-3');
+                leftColumn.classList.add('grid', 'grid-cols-3', 'sm:grid-cols-4', 'md:grid-cols-6', 'gap-2');
+                
+                // Clear right column just in case
+                rightColumn.innerHTML = '';
+
+            } else { 
+                // --- AVA (5v5) LAYOUT ---
+                // Use game-grid as the 2-column button container
+                gameGrid.classList.add('grid-cols-2', 'md:gap-x-10', 'gap-y-3');
                 gameGrid.classList.remove('grid-cols-1');
+                
+                // Show both wrappers (for titles)
                 leftColWrapper.classList.remove('hidden');
                 rightColWrapper.classList.remove('hidden');
 
                 columnTitle.classList.remove('text-3xl');
                 columnAvaTitle.classList.remove('hidden');
 
-                leftColumn.classList.remove('hidden');
+                // Hide the column divs themselves, as buttons go into game-grid
+                leftColumn.classList.add('hidden');
+                rightColumn.classList.add('hidden');
 
-                rightColumn.classList.add('flex', 'flex-col', 'space-y-3');
-                rightColumn.classList.remove('grid', 'grid-cols-3', 'sm:grid-cols-4', 'md:grid-cols-6', 'gap-2');
+                // Clear and reset legacy classes from county mode
+                leftColumn.innerHTML = '';
+                leftColumn.classList.add('flex', 'flex-col', 'space-y-3');
+                leftColumn.classList.remove('grid', 'grid-cols-3', 'sm:grid-cols-4', 'md:grid-cols-6', 'gap-2');
             }
         }
         
@@ -997,38 +1032,67 @@
         
         // --- AVA 5v5 Game Functions ---
         
+        /**
+         * LAYOUT FIX:
+         * - Populates buttons directly into #game-grid for parallel alignment
+         * - Adds placeholders to shorter columns
+         */
         function startAvaRound() {
             matchesMade = 0;
             selectedLeft = null;
             selectedRight = null;
-            leftColumn.innerHTML = '';
-            rightColumn.innerHTML = '';
+            gameGrid.innerHTML = ''; // Clear the main grid
 
             const { leftData, rightData } = getAvaRoundData();
             
             maxPossibleScore += (leftData.length * 2);
 
-            // Populate left column
-            leftData.forEach(item => {
-                const btn = document.createElement('button');
-                btn.className = 'btn-choice btn-choice-lg w-full text-left p-4 rounded-lg font-semibold';
-                btn.textContent = item.name;
-                btn.dataset.name = item.name;
-                btn.dataset.ava = item.ava;
-                btn.addEventListener('click', () => handleAvaLeftClick(btn, item.name, item.ava));
-                leftColumn.appendChild(btn);
-                firstAttemptMap.set(item.name, true);
-            });
+            // 1. Add Titles back to the grid
+            // (The wrappers are still in the HTML, we just add them to the grid)
+            columnTitle.textContent = leftColWrapper.querySelector('h3').textContent; // Keep title
+            columnAvaTitle.textContent = rightColWrapper.querySelector('h3').textContent;
+            gameGrid.appendChild(leftColWrapper);
+            gameGrid.appendChild(rightColWrapper);
 
-            // Populate right column
-            rightData.forEach(ava => {
-                const btn = document.createElement('button');
-                btn.className = 'btn-choice btn-choice-lg w-full text-left p-4 rounded-lg font-semibold';
-                btn.textContent = ava;
-                btn.dataset.ava = ava;
-                btn.addEventListener('click', () => handleAvaRightClick(btn, ava));
-                rightColumn.appendChild(btn);
-            });
+            // 2. Create placeholder div for alignment
+            const placeholder = document.createElement('div');
+            // Height must match .btn-choice-lg (h-16 is 4rem, p-4 is 2rem... h-[4.5rem] is safer)
+            placeholder.className = 'p-4 h-[4.5rem]'; 
+
+            // 3. Find max length and populate grid
+            const maxLen = Math.max(leftData.length, rightData.length);
+
+            for (let i = 0; i < maxLen; i++) {
+                // --- LEFT COLUMN ---
+                if (leftData[i]) {
+                    const item = leftData[i];
+                    const btn = document.createElement('button');
+                    btn.className = 'btn-choice btn-choice-lg w-full text-left rounded-lg font-semibold';
+                    btn.textContent = item.name;
+                    btn.dataset.name = item.name;
+                    btn.dataset.ava = item.ava;
+                    btn.addEventListener('click', () => handleAvaLeftClick(btn, item.name, item.ava));
+                    gameGrid.appendChild(btn);
+                    firstAttemptMap.set(item.name, true);
+                } else {
+                    // Add placeholder to left column
+                    gameGrid.appendChild(placeholder.cloneNode());
+                }
+
+                // --- RIGHT COLUMN ---
+                if (rightData[i]) {
+                    const ava = rightData[i];
+                    const btn = document.createElement('button');
+                    btn.className = 'btn-choice btn-choice-lg w-full text-left rounded-lg font-semibold';
+                    btn.textContent = ava;
+                    btn.dataset.ava = ava;
+                    btn.addEventListener('click', () => handleAvaRightClick(btn, ava));
+                    gameGrid.appendChild(btn);
+                } else {
+                    // Add placeholder to right column
+                    gameGrid.appendChild(placeholder.cloneNode());
+                }
+            }
         }
         
         function getAvaRoundData() {
@@ -1036,17 +1100,18 @@
             
             if (activeGameData.allData) {
                 dataSource = activeGameData.allData;
-                columnTitle.textContent = "Producers & Vineyards";
+                leftColWrapper.querySelector('h3').textContent = "Producers & Vineyards";
             } else {
                 const roundGroup = Math.floor((currentRound - 1) / 5);
                 if (roundGroup === 0 || roundGroup === 2) {
                     dataSource = activeGameData.producers;
-                    columnTitle.textContent = "Producers";
+                    leftColWrapper.querySelector('h3').textContent = "Producers";
                 } else {
                     dataSource = activeGameData.vineyards;
-                    columnTitle.textContent = "Vineyards";
+                    leftColWrapper.querySelector('h3').textContent = "Vineyards";
                 }
             }
+            rightColWrapper.querySelector('h3').textContent = "AVAs"; // Always set this
 
             const shuffledSource = [...dataSource];
             shuffleArray(shuffledSource);
@@ -1131,7 +1196,9 @@
                     totalScore += 1;
                 }
                 
-                if (matchesMade === leftColumn.children.length) {
+                // Check if all *real* buttons (not placeholders) are matched
+                const totalButtons = Array.from(gameGrid.querySelectorAll('.btn-choice[data-name]')).length;
+                if (matchesMade === totalButtons) {
                     setTimeout(showSuccessModal, 500);
                 }
             } else {
@@ -1153,9 +1220,8 @@
         // --- County Game Functions ---
         
         /**
-         * UPDATED FUNCTION:
-         * This now builds a smaller pool of 30 counties (or fewer if the total is less)
-         * It includes all correct counties and fills the rest with random distractors.
+         * COUNTY LOGIC (with 30-item pool)
+         * - Populates the grid into #left-column
          */
         function startCountyRound() {
             currentCountyRoundData = activeGameData.data[currentRound - 1];
@@ -1166,26 +1232,19 @@
             maxPossibleScore += (countiesRemaining * 2);
             
             updateCountyPrompt();
-            rightColumn.innerHTML = ''; // Clear old grid
+            leftColumn.innerHTML = ''; // Clear old grid (using leftColumn for county grid)
 
-            // --- NEW LOGIC ---
-            // Create a challenging but not overwhelming pool of counties
+            // --- POOL LOGIC ---
             const maxPoolSize = 30; // Max 30 buttons on screen
             
-            // 1. Get all possible distractors (all counties EXCEPT the correct ones)
             const possibleDistractors = activeGameData.allCounties.filter(county => !correctCountiesSet.has(county));
             shuffleArray(possibleDistractors);
 
-            // 2. Calculate how many distractors we need
             const numDistractorsNeeded = Math.max(0, maxPoolSize - correctCounties.length);
-
-            // 3. Get the distractors
             const distractors = possibleDistractors.slice(0, numDistractorsNeeded);
 
-            // 4. Create the final pool for this round (correct + distractors)
             const roundCountyPool = [...correctCounties, ...distractors];
             shuffleArray(roundCountyPool); // Shuffle them together
-            // --- END NEW LOGIC ---
             
             // Populate grid with the new, smaller pool
             roundCountyPool.forEach(countyName => {
@@ -1194,7 +1253,7 @@
                 btn.textContent = countyName;
                 btn.dataset.name = countyName;
                 btn.addEventListener('click', () => handleCountyClick(btn, countyName));
-                rightColumn.appendChild(btn);
+                leftColumn.appendChild(btn); // Add to leftColumn
             });
         }
         
@@ -1298,6 +1357,16 @@
             }, 10);
         }
 
+        // NEW: Function to restart the current game mode
+        function restartCurrentGame() {
+            gameOverModal.firstElementChild.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                gameOverModal.classList.add('hidden');
+                initGame(); // Re-initializes the *current* activeGameData
+            }, 200);
+        }
+
+        // This function now just goes to the main menu
         function hideGameOver() {
             gameOverModal.firstElementChild.classList.add('scale-95', 'opacity-0');
             setTimeout(() => {
@@ -1317,7 +1386,10 @@
         mainMenuBtn.addEventListener('click', goToMainMenu);
         
         nextRoundBtn.addEventListener('click', hideSuccessModal);
-        playAgainBtn.addEventListener('click', hideGameOver);
+        
+        // NEW: Updated listeners for the two game over buttons
+        playAgainBtn.addEventListener('click', restartCurrentGame); // Restarts current mode
+        playAgainMenuBtn.addEventListener('click', hideGameOver); // Goes to main menu
 
     </script>
 </body>
