@@ -224,7 +224,7 @@
             { name: "Matanzas Creek", ava: "Bennett Valley AVA" },
             { name: "Bevan", ava: "Bennett Valley AVA" },
             { name: "Chalk Hill Estate", ava: "Chalk Hill AVA" },
-            { name:s: "A. Raffanelli", ava: "Dry Creek Valley AVA" },
+            { name: "A. Raffanelli", ava: "Dry Creek Valley AVA" },
             { name: "Armida", ava: "Dry Creek Valley AVA" },
             { name: "Michel-Schlumberger", ava: "Dry Creek Valley AVA" },
             { name: "Failla", ava: "Fort Ross - Seaview AVA" },
@@ -687,7 +687,7 @@
             { name: "Les Collines Vineyard", ava: "Walla Walla Valley AVA" },
             { name: "Woodward Canyon", ava: "Walla Walla Valley AVA" },
             { name: "Claar Cellars", ava: "White Bluffs AVA" },
-            { name:g: "Bacchus Vineyard", ava: "White Bluffs AVA" }, // This was the syntax error fix
+            { name: "Bacchus Vineyard", ava: "White Bluffs AVA" }, 
             { name: "Dionysis Vineyard", ava: "White Bluffs AVA" },
             { name: "Gamache Vineyard", ava: "White Bluffs AVA" },
             { name: "Sagemoor Vineyard", ava: "White Bluffs AVA" },
@@ -1225,9 +1225,9 @@
         // --- County Game Functions ---
         
         /**
-         * COUNTY POOL FIX:
-         * This function now builds a smaller pool of 30 counties.
-         * It includes all correct counties and fills the rest with random distractors.
+         * DYNAMIC COUNTY POOL FIX:
+         * - Pool is 15 if 8+ counties are correct.
+         * - Pool is 8 if 7 or fewer counties are correct.
          */
         function startCountyRound() {
             currentCountyRoundData = activeGameData.data[currentRound - 1];
@@ -1240,8 +1240,14 @@
             updateCountyPrompt();
             leftColumn.innerHTML = ''; // Clear old grid (using leftColumn for county grid)
 
-            // --- POOL LOGIC ---
-            const maxPoolSize = 30; // Max 30 buttons on screen
+            // --- NEW DYNAMIC POOL LOGIC ---
+            let maxPoolSize;
+            if (correctCounties.length >= 8) {
+                maxPoolSize = 15;
+            } else {
+                maxPoolSize = 8;
+            }
+            // --- END NEW DYNAMIC POOL LOGIC ---
             
             // 1. Get all possible distractors (all counties EXCEPT the correct ones)
             const possibleDistractors = activeGameData.allCounties.filter(county => !correctCountiesSet.has(county));
@@ -1256,7 +1262,6 @@
             // 4. Create the final pool for this round (correct + distractors)
             const roundCountyPool = [...correctCounties, ...distractors];
             shuffleArray(roundCountyPool); // Shuffle them together
-            // --- END POOL LOGIC ---
             
             // Populate grid with the new, smaller pool
             roundCountyPool.forEach(countyName => {
