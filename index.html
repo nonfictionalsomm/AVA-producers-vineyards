@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sonoma AVA Challenge</title>
+    <title>AVA Challenge</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
@@ -36,6 +36,18 @@
         .theme-border-light {
             border-color: #BBF7D0; /* green-200 */
         }
+        
+        /* Using a deep purple/wine for the "Napa" theme */
+        .napa-text {
+            color: #4C1D95; /* violet-900 */
+        }
+        .napa-bg {
+            background-color: #5B21B6; /* violet-800 */
+        }
+        .napa-bg-hover:hover {
+            background-color: #4C1D95; /* violet-900 */
+        }
+
 
         .game-card {
             background-color: #FFFFFF;
@@ -82,8 +94,8 @@
     <!-- Start Game Modal -->
     <div id="start-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
         <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full text-center transform transition-all">
-            <h2 class="text-4xl font-bold mb-4 theme-text">Sonoma AVA Challenge</h2>
-            <p class="text-lg mb-6 text-left text-gray-700">Test your knowledge of Sonoma County's Producers, Vineyards, and AVAs.</p>
+            <h2 class="text-4xl font-bold mb-4 theme-text">AVA Challenge</h2>
+            <p class="text-lg mb-6 text-left text-gray-700">Test your knowledge by matching Producers and Vineyards to their correct AVAs.</p>
             <div class="text-left space-y-3 mb-8 theme-bg-light p-4 rounded-lg border theme-border-light">
                 <p><strong class="theme-text">GOAL:</strong> Match the items in the left column to the correct AVA in the right column.</p>
                 <p><strong class="theme-text">SCORING:</strong></p>
@@ -93,14 +105,22 @@
                     <li><span class="font-bold text-red-700">-1 point</span> for an incorrect match.</li>
                 </ul>
             </div>
-            <button id="start-game-btn" class="w-full theme-bg text-white font-bold py-3 px-4 rounded-lg theme-bg-hover transition-colors text-xl">Start Game</button>
+            <!-- Game Mode Selection -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <button id="start-sonoma-btn" class="w-full theme-bg text-white font-bold py-3 px-4 rounded-lg theme-bg-hover transition-colors text-xl">
+                    Sonoma Challenge
+                </button>
+                <button id="start-napa-btn" class="w-full napa-bg text-white font-bold py-3 px-4 rounded-lg napa-bg-hover transition-colors text-xl">
+                    Napa Challenge
+                </button>
+            </div>
         </div>
     </div>
 
     <!-- Main Game Container -->
     <div id="game-container" class="w-full max-w-5xl mx-auto hidden">
         <div class="text-center mb-6">
-            <h1 class="text-4xl md:text-5xl font-bold theme-text">Sonoma AVA Master</h1>
+            <h1 id="game-title" class="text-4xl md:text-5xl font-bold theme-text">Sonoma AVA Master</h1>
             <p class="text-lg text-gray-600 mt-2">Producer & Vineyard Challenge</p>
         </div>
 
@@ -130,7 +150,7 @@
 
                 <!-- Right Column -->
                 <div>
-                    <h3 class="text-2xl font-bold text-center mb-4 theme-text">AVAs</h3>
+                    <h3 id="column-ava-title" class="text-2xl font-bold text-center mb-4 theme-text">AVAs</h3>
                     <div id="right-column" class="flex flex-col space-y-3">
                         <!-- Right buttons will be inserted here -->
                     </div>
@@ -150,7 +170,7 @@
     <!-- Game Over Modal -->
     <div id="game-over-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
         <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center transform transition-all scale-95 opacity-0">
-            <h2 class="text-4xl font-bold mb-4 theme-text">Game Over!</h2>
+            <h2 id="game-over-title" class="text-4xl font-bold mb-4 theme-text">Game Over!</h2>
             <p id="final-score-message" class="text-3xl font-bold mb-4 theme-text"></p>
             <div class="theme-bg-light p-4 rounded-lg mb-6">
                 <p class="text-lg text-left clear-both">Final Score: <span id="final-score" class="font-bold float-right">0</span></p>
@@ -161,8 +181,8 @@
     </div>
 
     <script>
-        // --- UPDATED SONOMA DATABASE ---
-        const producersData = [
+        // --- SONOMA DATABASE ---
+        const sonomaProducersData = [
             { name: "Alexander Valley Vineyards", ava: "Alexander Valley AVA" },
             { name: "Jordan", ava: "Alexander Valley AVA" },
             { name: "Silver Oak", ava: "Alexander Valley AVA" },
@@ -185,11 +205,11 @@
             { name: "Anakota", ava: "Knights Valley AVA" },
             { name: "Beringer", ava: "Knights Valley AVA" },
             { name: "Peter Michael", ava: "Knights Valley AVA" },
-            { name: "Bouchaine", ava: "Los Carneros AVA (Sonoma)" },
-            { name: "Domaine Carneros", ava: "Los Carneros AVA (Sonoma)" },
-            { name: "Etude", ava: "Los Carneros AVA (Sonoma)" },
-            { name: "Poseidon", ava: "Los Carneros AVA (Sonoma)" },
-            { name: "Truchard", ava: "Los Carneros AVA (Sonoma)" },
+            { name: "Bouchaine", ava: "Los Carneros AVA" },
+            { name: "Domaine Carneros", ava: "Los Carneros AVA" },
+            { name: "Etude", ava: "Los Carneros AVA" },
+            { name: "Poseidon", ava: "Los Carneros AVA" },
+            { name: "Truchard", ava: "Los Carneros AVA" },
             { name: "Amapola Creek", ava: "Moon Mountain District Sonoma County AVA" },
             { name: "Keller Estate", ava: "Petaluma Gap AVA" },
             { name: "Captûre Wines", ava: "Pine Mountain–Cloverdale Peak AVA" },
@@ -210,7 +230,7 @@
             { name: "DuMOL", ava: "West Sonoma Coast AVA" }
         ];
 
-        const vineyardsData = [
+        const sonomaVineyardsData = [
             { name: "Geyserville", ava: "Alexander Valley AVA" },
             { name: "Robert Young Estate", ava: "Alexander Valley AVA" },
             { name: "Dry Stack Vineyard", ava: "Bennett Valley AVA" },
@@ -227,8 +247,8 @@
             { name: "Morelli Lane Vineyard", ava: "Green Valley of the Russian River Valley AVA" },
             { name: "Charles Heintz", ava: "Green Valley of the Russian River Valley AVA" },
             { name: "Knights Bridge Vineyard", ava: "Knights Valley AVA" },
-            { name: "Stanly Ranch", ava: "Los Carneros AVA (Sonoma)" },
-            { name: "Sangiacomo Vineyard", ava: "Los Carneros AVA (Sonoma)" },
+            { name: "Stanly Ranch", ava: "Los Carneros AVA" },
+            { name: "Sangiacomo Vineyard", ava: "Los Carneros AVA" },
             { name: "Monte Rosso Vineyard", ava: "Moon Mountain District Sonoma County AVA" },
             { name: "Montecillo Vineyard", ava: "Moon Mountain District Sonoma County AVA" },
             { name: "Ambassador’s 1953 Vineyard", ava: "Moon Mountain District Sonoma County AVA" },
@@ -254,6 +274,228 @@
             { name: "B.A. Thieriot Vineyard", ava: "West Sonoma Coast AVA" }
         ];
 
+        // --- NAPA DATABASE ---
+        const napaProducersData = [
+            { name: "Antica", ava: "Atlas Peak AVA" },
+            { name: "Au Sommet", ava: "Atlas Peak AVA" },
+            { name: "Kongsgaard", ava: "Atlas Peak AVA" },
+            { name: "Araujo (Eisele Vineyard Estate)", ava: "Calistoga AVA" },
+            { name: "Aubert", ava: "Calistoga AVA" },
+            { name: "Bennett Lane", ava: "Calistoga AVA" },
+            { name: "Chateau Montelena", ava: "Calistoga AVA" },
+            { name: "Hundred Acre", ava: "Calistoga AVA" },
+            { name: "Jericho Canyon", ava: "Calistoga AVA" },
+            { name: "Larkmead", ava: "Calistoga AVA" },
+            { name: "Schrader Cellars", ava: "Calistoga AVA" },
+            { name: "Sterling", ava: "Calistoga AVA" },
+            { name: "Storybook Mountain", ava: "Calistoga AVA" },
+            { name: "Twomey", ava: "Calistoga AVA" },
+            { name: "Brown", ava: "Chiles Valley AVA" },
+            { name: "Green & Red", ava: "Chiles Valley AVA" },
+            { name: "Nichelini", ava: "Chiles Valley AVA" },
+            { name: "Volker Eisele", ava: "Chiles Valley AVA" },
+            { name: "Arrow & Branch", ava: "Coombsville AVA" },
+            { name: "Caldwell", ava: "Coombsville AVA" },
+            { name: "Favia", ava: "Coombsville AVA" },
+            { name: "Palmaz", ava: "Coombsville AVA" },
+            { name: "Tournesol", ava: "Coombsville AVA" },
+            { name: "Tulocay", ava: "Coombsville AVA" },
+            { name: "Burgess Cellars", ava: "Crystal Springs of Napa Valley AVA" },
+            { name: "Viader", ava: "Crystal Springs of Napa Valley AVA" },
+            { name: "Constant", ava: "Diamond Mountain District AVA" },
+            { name: "Diamond Creek", ava: "Diamond Mountain District AVA" },
+            { name: "Dyer Straits", ava: "Diamond Mountain District AVA" },
+            { name: "Schramsberg", ava: "Diamond Mountain District AVA" },
+            { name: "Cade", ava: "Howell Mountain AVA" },
+            { name: "Dunn", ava: "Howell Mountain AVA" },
+            { name: "La Jota", ava: "Howell Mountain AVA" },
+            { name: "O'Shaughnessy", ava: "Howell Mountain AVA" },
+            { name: "Robert Craig", ava: "Howell Mountain AVA" },
+            { name: "Bouchaine", ava: "Los Carneros AVA" },
+            { name: "Domaine Carneros", ava: "Los Carneros AVA" },
+            { name: "Etude", ava: "Los Carneros AVA" },
+            { name: "Truchard", ava: "Los Carneros AVA" },
+            { name: "Hess", ava: "Mount Veeder AVA" },
+            { name: "Lagier-Meredith", ava: "Mount Veeder AVA" },
+            { name: "Mayacamas", ava: "Mount Veeder AVA" },
+            { name: "Progeny", ava: "Mount Veeder AVA" },
+            { name: "Sky", ava: "Mount Veeder AVA" },
+            { name: "Blackbird", ava: "Oak Knoll District of Napa Valley AVA" },
+            { name: "Hendry Ranch", ava: "Oak Knoll District of Napa Valley AVA" },
+            { name: "Laird", ava: "Oak Knoll District of Napa Valley AVA" },
+            { name: "Matthiasson", ava: "Oak Knoll District of Napa Valley AVA" },
+            { name: "Monticello", ava: "Oak Knoll District of Napa Valley AVA" },
+            { name: "Robert Biale", ava: "Oak Knoll District of Napa Valley AVA" },
+            { name: "Trefethen", ava: "Oak Knoll District of Napa Valley AVA" },
+            { name: "Dalla Valle", ava: "Oakville AVA" },
+            { name: "Far Niente", ava: "Oakville AVA" },
+            { name: "Futo", ava: "Oakville AVA" },
+            { name: "Groth", ava: "Oakville AVA" },
+            { name: "Harlan", ava: "Oakville AVA" },
+            { name: "MacDonald", ava: "Oakville AVA" },
+            { name: "Opus One", ava: "Oakville AVA" },
+            { name: "Robert Mondavi", ava: "Oakville AVA" },
+            { name: "Rudd", ava: "Oakville AVA" },
+            { name: "Screaming Eagle", ava: "Oakville AVA" },
+            { name: "Silver Oak", ava: "Oakville AVA" },
+            { name: "Beaulieu Vineyard", ava: "Rutherford AVA" },
+            { name: "Cakebread", ava: "Rutherford AVA" },
+            { name: "Caymus", ava: "Rutherford AVA" },
+            { name: "Frog's Leap", ava: "Rutherford AVA" },
+            { name: "Grgich Hills", ava: "Rutherford AVA" },
+            { name: "Inglenook", ava: "Rutherford AVA" },
+            { name: "Long Meadow Ranch", ava: "Rutherford AVA" },
+            { name: "Quintessa", ava: "Rutherford AVA" },
+            { name: "Raymond", ava: "Rutherford AVA" },
+            { name: "Round Pond", ava: "Rutherford AVA" },
+            { name: "Staglin", ava: "Rutherford AVA" },
+            { name: "St. Supéry", ava: "Rutherford AVA" },
+            { name: "Barnett", ava: "Spring Mountain District AVA" },
+            { name: "Behrens", ava: "Spring Mountain District AVA" },
+            { name: "Cain", ava: "Spring Mountain District AVA" },
+            { name: "Newton", ava: "Spring Mountain District AVA" },
+            { name: "Philip Togni", ava: "Spring Mountain District AVA" },
+            { name: "Pride Mountain", ava: "Spring Mountain District AVA" },
+            { name: "Ritchie Creek", ava: "Spring Mountain District AVA" },
+            { name: "Smith-Madrone", ava: "Spring Mountain District AVA" },
+            { name: "Spring Mountain", ava: "Spring Mountain District AVA" },
+            { name: "Stony Hill", ava: "Spring Mountain District AVA" },
+            { name: "Terra Valentine", ava: "Spring Mountain District AVA" },
+            { name: "Beringer", ava: "St. Helena AVA" },
+            { name: "Charles Krug", ava: "St. Helena AVA" },
+            { name: "Corison", ava: "St. Helena AVA" },
+            { name: "Crocker", ava: "St. Helena AVA" },
+            { name: "Forman", ava: "St. Helena AVA" },
+            { name: "Freemark Abbey", ava: "St. Helena AVA" },
+            { name: "Grace Family", ava: "St. Helena AVA" },
+            { name: "Heitz", ava: "St. Helena AVA" },
+            { name: "Hourglass", ava: "St. Helena AVA" },
+            { name: "Joseph Phelps", ava: "St. Helena AVA" },
+            { name: "Louis M. Martini", ava: "St. Helena AVA" },
+            { name: "Merryvale", ava: "St. Helena AVA" },
+            { name: "Rombauer Vineyard", ava: "St. Helena AVA" },
+            { name: "Spottswoode", ava: "St. Helena AVA" },
+            { name: "St. Clement", ava: "St. Helena AVA" },
+            { name: "Turley", ava: "St. Helena AVA" },
+            { name: "Vineyard 29", ava: "St. Helena AVA" },
+            { name: "Chimney Rock", ava: "Stags Leap District AVA" },
+            { name: "Cliff Lede", ava: "Stags Leap District AVA" },
+            { name: "Clos du Val", ava: "Stags Leap District AVA" },
+            { name: "Futo 5500", ava: "Stags Leap District AVA" },
+            { name: "Hartwell", ava: "Stags Leap District AVA" },
+            { name: "Odette", ava: "Stags Leap District AVA" },
+            { name: "Pine Ridge", ava: "Stags Leap District AVA" },
+            { name: "Poetry", ava: "Stags Leap District AVA" },
+            { name: "Realm", ava: "Stags Leap District AVA" },
+            { name: "Robert Sinskey", ava: "Stags Leap District AVA" },
+            { name: "Shafer", ava: "Stags Leap District AVA" },
+            { name: "Silverado Vineyards", ava: "Stags Leap District AVA" },
+            { name: "Stag's Leap Wine Cellars", ava: "Stags Leap District AVA" },
+            { name: "Stags' Leap Winery", ava: "Stags Leap District AVA" },
+            { name: "Steltzner", ava: "Stags Leap District AVA" },
+            { name: "Blankiet", ava: "Yountville AVA" },
+            { name: "Domaine Chandon", ava: "Yountville AVA" },
+            { name: "Dominus", ava: "Yountville AVA" },
+            { name: "Gemstone", ava: "Yountville AVA" },
+            { name: "Kapcsándy", ava: "Yountville AVA" },
+            { name: "Keever", ava: "Yountville AVA" }
+        ];
+
+        const napaVineyardsData = [
+            { name: "Stagecoach", ava: "Atlas Peak AVA" },
+            { name: "Water Ranch", ava: "Atlas Peak AVA" },
+            { name: "Eisele", ava: "Calistoga AVA" },
+            { name: "Frediani", ava: "Calistoga AVA" },
+            { name: "Lamb", ava: "Calistoga AVA" },
+            { name: "Luvisi", ava: "Calistoga AVA" },
+            { name: "Three Palms", ava: "Calistoga AVA" },
+            { name: "Tofanelli", ava: "Calistoga AVA" },
+            { name: "Arcadia", ava: "Coombsville AVA" },
+            { name: "Dead Fred", ava: "Coombsville AVA" },
+            { name: "Haynes", ava: "Coombsville AVA" },
+            { name: "Judge", ava: "Coombsville AVA" },
+            { name: "Meteor", ava: "Coombsville AVA" },
+            { name: "Moore", ava: "Coombsville AVA" },
+            { name: "Gravelly Meadow", ava: "Diamond Mountain District AVA" },
+            { name: "Jasud", ava: "Diamond Mountain District AVA" },
+            { name: "Lake", ava: "Diamond Mountain District AVA" },
+            { name: "Red Rock Terrace", ava: "Diamond Mountain District AVA" },
+            { name: "Volcanic Hill", ava: "Diamond Mountain District AVA" },
+            { name: "Bancroft", ava: "Howell Mountain AVA" },
+            { name: "Beatty", ava: "Howell Mountain AVA" },
+            { name: "Black Sears", ava: "Howell Mountain AVA" },
+            { name: "Dragon", ava: "Howell Mountain AVA" },
+            { name: "Las Posadas", ava: "Howell Mountain AVA" },
+            { name: "Rattlesnake Ridge", ava: "Howell Mountain AVA" },
+            { name: "Steinhauer", ava: "Howell Mountain AVA" },
+            { name: "True", ava: "Howell Mountain AVA" },
+            { name: "W. S. Keyes", ava: "Howell Mountain AVA" },
+            { name: "Hudson", ava: "Los Carneros AVA" },
+            { name: "Hyde", ava: "Los Carneros AVA" },
+            { name: "Poseidon", ava: "Los Carneros AVA" },
+            { name: "Stanly Ranch", ava: "Los Carneros AVA" },
+            { name: "Abel 1833", ava: "Mount Veeder AVA" },
+            { name: "Mt. Veeder", ava: "Mount Veeder AVA" },
+            { name: "Scaggs", ava: "Mount Veeder AVA" },
+            { name: "Backus", ava: "Oakville AVA" },
+            { name: "Beckstoffer Missouri Hopper", ava: "Oakville AVA" },
+            { name: "Beckstoffer To-Kalon", ava: "Oakville AVA" },
+            { name: "Detert", ava: "Oakville AVA" },
+            { name: "Gamble Ranch", ava: "Oakville AVA" },
+            { name: "Martha’s Vineyard", ava: "Oakville AVA" },
+            { name: "Martin Stelling", ava: "Oakville AVA" },
+            { name: "Oakville Ranch", ava: "Oakville AVA" },
+            { name: "St. Eden", ava: "Oakville AVA" },
+            { name: "Tench", ava: "Oakville AVA" },
+            { name: "Vine Hill", ava: "Oakville AVA" },
+            { name: "Weitz", ava: "Oakville AVA" },
+            { name: "Beckstoffer Georges III", ava: "Rutherford AVA" },
+            { name: "Beckstoffer Melrose", ava: "Rutherford AVA" },
+            { name: "Booth Bella Oaks", ava: "Rutherford AVA" },
+            { name: "Bosché", ava: "Rutherford AVA" },
+            { name: "Star", ava: "Rutherford AVA" },
+            { name: "Sycamore", ava: "Rutherford AVA" },
+            { name: "Marston", ava: "Spring Mountain District AVA" },
+            { name: "School House", ava: "Spring Mountain District AVA" },
+            { name: "Aida", ava: "St. Helena AVA" },
+            { name: "Beckstoffer Bourn", ava: "St. Helena AVA" },
+            { name: "Beckstoffer Crane", ava: "St. Helena AVA" },
+            { name: "Beckstoffer Las Piedras", ava: "St. Helena AVA" },
+            { name: "Capella", ava: "St. Helena AVA" },
+            { name: "Edge Hill", ava: "St. Helena AVA" },
+            { name: "Hayne", ava: "St. Helena AVA" },
+            { name: "Kayli Morgan", ava: "St. Helena AVA" },
+            { name: "Kronos", ava: "St. Helena AVA" },
+            { name: "Lewelling", ava: "St. Helena AVA" },
+            { name: "Library", ava: "St. Helena AVA" },
+            { name: "Madrona", ava: "St. Helena AVA" },
+            { name: "Quella", ava: "St. Helena AVA" },
+            { name: "Tychson Hill", ava: "St. Helena AVA" },
+            { name: "Fay", ava: "Stags Leap District AVA" },
+            { name: "Regusci", ava: "Stags Leap District AVA" },
+            { name: "Wappo Hill", ava: "Stags Leap District AVA" },
+            { name: "Heron Lake", ava: "Wild Horse Valley AVA" },
+            { name: "Ghost Block", ava: "Yountville AVA" },
+            { name: "Grgich", ava: "Yountville AVA" },
+            { name: "Napanook", ava: "Yountville AVA" },
+            { name: "Reese/Sleeping Lady", ava: "Yountville AVA" }
+        ];
+
+        // --- GAME DATA WRAPPERS ---
+        const sonomaGameData = {
+            title: "Sonoma AVA Master",
+            producers: sonomaProducersData,
+            vineyards: sonomaVineyardsData,
+            theme: "theme-text" // Green
+        };
+        
+        const napaGameData = {
+            title: "Napa AVA Master",
+            producers: napaProducersData,
+            vineyards: napaVineyardsData,
+            theme: "napa-text" // Purple
+        };
+
         // --- GAME STATE ---
         let currentRound = 1;
         let totalScore = 0;
@@ -265,18 +507,24 @@
         let selectedRight = null;
         let matchesMade = 0;
         let firstAttemptMap = new Map();
+        let activeGameData = null; // Will be set to sonomaGameData or napaGameData
 
         // --- DOM ELEMENTS ---
         const gameContainer = document.getElementById('game-container');
         const startModal = document.getElementById('start-modal');
-        const startGameBtn = document.getElementById('start-game-btn');
+        const startSonomaBtn = document.getElementById('start-sonoma-btn');
+        const startNapaBtn = document.getElementById('start-napa-btn');
+        const gameTitle = document.getElementById('game-title');
         const scoreInfo = document.getElementById('score-info');
         const roundInfo = document.getElementById('round-info');
         const columnTitle = document.getElementById('column-title');
+        const columnAvaTitle = document.getElementById('column-ava-title');
         const leftColumn = document.getElementById('left-column');
         const rightColumn = document.getElementById('right-column');
         const successModal = document.getElementById('success-modal');
         const gameOverModal = document.getElementById('game-over-modal');
+        const gameOverTitle = document.getElementById('game-over-title');
+        const finalScoreMessage = document.getElementById('final-score-message');
         const nextRoundBtn = document.getElementById('next-round-btn');
         const playAgainBtn = document.getElementById('play-again-btn');
 
@@ -292,78 +540,26 @@
 
         /** Selects 5 unique items from a data source for the round. */
         function getRoundData() {
-            // Determine data source based on round number
-            // Rounds 1-5, 11-15: Producers
-            // Rounds 6-10, 16-20: Vineyards
+            // Determine data source based on round number and active game
             const roundGroup = Math.floor((currentRound - 1) / 5);
             let dataSource;
             if (roundGroup === 0 || roundGroup === 2) {
-                dataSource = producersData;
+                dataSource = activeGameData.producers;
                 columnTitle.textContent = "Producers";
             } else {
-                dataSource = vineyardsData;
+                dataSource = activeGameData.vineyards;
                 columnTitle.textContent = "Vineyards";
             }
 
-            const shuffledData = [...dataSource];
-            shuffleArray(shuffledData);
+            const shuffledSource = [...dataSource];
+            shuffleArray(shuffledSource);
 
             // Pick 5 items with unique AVAs
             const roundItems = [];
             const avasInRound = new Set();
-            for (const item of shuffledData) {
-                if (!avasInRound.has(item.ava)) {
-                    roundItems.push(item);
-                    avasInRound.add(item.ava);
-                }
-                if (roundItems.length === itemsPerRound) {
-                    break;
-                }
-            }
-            
-            // Fallback in case we don't have 5 items with unique AVAs (unlikely with this data)
-            // This is a safeguard, but with the current data, it's rarely needed.
-            if (roundItems.length < itemsPerRound) {
-                const remainingData = [...dataSource].filter(item => !roundItems.find(i => i.name === item.name));
-                shuffleArray(remainingData);
-                for (const item of remainingData) {
-                    if (roundItems.length < itemsPerRound) {
-                         roundItems.push(item);
-                    } else {
-                        break;
-                    }
-                }
-            }
-
-
-            const leftData = roundItems.map(item => ({ name: item.name, ava: item.ava }));
-            // Ensure the right column has unique AVAs from the selected items
-            const rightDataAVAs = [...new Set(roundItems.map(item => item.ava))];
-            
-            // If by chance (due to fallback) we have fewer than 5 unique AVAs,
-            // we must ensure the left and right columns still match in number.
-            // This logic simplifies to just using the AVAs from the selected items.
-            const rightData = [...rightDataAVAs];
-            
-            // This scenario might happen if the fallback adds items with duplicate AVAs.
-            // To maintain the 5v5 game, we'll ensure the right column has 5 unique AVAs
-            // even if the left column has duplicates.
-            // Let's re-ensure the right column *only* contains the unique AVAs from the left column.
-            const uniqueAVAs = Array.from(new Set(leftData.map(item => item.ava)));
-            shuffleArray(uniqueAVAs);
-            
-            // And now we must ensure the *left* column items only map to *these* AVAs.
-            // The original logic is better: get 5 items with 5 unique AVAs.
-            // The problem is the fallback. Let's fix the getRoundData logic.
-
-            // --- REVISED getRoundData logic ---
-            avasInRound.clear();
-            roundItems.length = 0;
-            const shuffledSource = [...dataSource];
-            shuffleArray(shuffledSource);
-
             for (const item of shuffledSource) {
-                if (!avasInRound.has(item.ava)) {
+                // Ensure item has a name and ava
+                if (item.name && item.ava && !avasInRound.has(item.ava)) {
                     roundItems.push(item);
                     avasInRound.add(item.ava);
                 }
@@ -372,12 +568,22 @@
                 }
             }
             
-            // If we *still* don't have 5 (e.g., small data source), we must adjust.
-            // For this game, we'll assume the data source is large enough.
-            // The current data IS large enough.
+            // Fallback: If we still don't have 5 items (e.g., small data source),
+            // fill the rest, even if AVAs are duplicated.
+            if (roundItems.length < itemsPerRound) {
+                 for (const item of shuffledSource) {
+                     if (item.name && item.ava && !roundItems.find(i => i.name === item.name)) {
+                         roundItems.push(item);
+                     }
+                     if (roundItems.length === itemsPerRound) {
+                         break;
+                     }
+                 }
+            }
 
             const finalLeftData = roundItems.map(item => ({ name: item.name, ava: item.ava }));
-            const finalRightData = roundItems.map(item => item.ava); // AVAs are guaranteed unique here
+            // Get unique AVAs from the left data for the right column
+            const finalRightData = Array.from(new Set(roundItems.map(item => item.ava)));
 
             // Shuffle both columns independently
             shuffleArray(finalLeftData);
@@ -385,8 +591,40 @@
 
             return { leftData: finalLeftData, rightData: finalRightData };
         }
+        
+        /** Applies correct theme colors */
+        function applyTheme() {
+            const themeClass = activeGameData.theme;
+            const otherTheme = (themeClass === "theme-text") ? "napa-text" : "theme-text";
+            
+            // Remove other theme, add current theme
+            [gameTitle, columnTitle, columnAvaTitle, gameOverTitle, finalScoreMessage].forEach(el => {
+                el.classList.remove(otherTheme);
+                el.classList.add(themeClass);
+            });
+            
+            // Update button styles on modals
+            const nextButtonTheme = (themeClass === "napa-text") ? "napa-bg" : "theme-bg";
+            const nextButtonHover = (themeClass === "napa-text") ? "napa-bg-hover" : "theme-bg-hover";
+            const otherNextButtonTheme = (themeClass === "napa-text") ? "theme-bg" : "napa-bg";
+            const otherNextButtonHover = (themeClass === "napa-text") ? "theme-bg-hover" : "napa-bg-hover";
+            
+            [nextRoundBtn, playAgainBtn].forEach(btn => {
+                btn.classList.remove(otherNextButtonTheme, otherNextButtonHover);
+                btn.classList.add(nextButtonTheme, nextButtonHover);
+            });
+        }
 
         // --- GAME LOGIC ---
+
+        function startGameFlow(gameData) {
+            activeGameData = gameData;
+            gameTitle.textContent = activeGameData.title;
+            applyTheme();
+            startModal.classList.add('hidden');
+            gameContainer.classList.remove('hidden');
+            initGame();
+        }
 
         function initGame() {
             currentRound = 1;
@@ -556,8 +794,7 @@
             const percentage = Math.max(0, Math.round((totalScore / maxPossibleScore) * 100));
             const finalScoreEl = document.getElementById('final-score');
             const finalPercentageEl = document.getElementById('final-percentage');
-            const finalMessageEl = document.getElementById('final-score-message');
-
+            
             let feedback = "";
             if (percentage >= 90) {
                 feedback = "AVA Master!";
@@ -571,7 +808,7 @@
             
             finalScoreEl.textContent = totalScore;
             finalPercentageEl.textContent = `${percentage}%`;
-            finalMessageEl.textContent = feedback;
+            finalScoreMessage.textContent = feedback;
 
             // Hide success modal if it's somehow open
             successModal.classList.add('hidden');
@@ -586,16 +823,16 @@
             gameOverModal.firstElementChild.classList.add('scale-95', 'opacity-0');
             setTimeout(() => {
                 gameOverModal.classList.add('hidden');
-                initGame(); // Reset and start game over
+                // Show start modal instead of restarting
+                startModal.classList.remove('hidden'); 
+                gameContainer.classList.add('hidden');
+                activeGameData = null; // Reset
             }, 200);
         }
 
         // --- EVENT LISTENERS ---
-        startGameBtn.addEventListener('click', () => {
-            startModal.classList.add('hidden');
-            gameContainer.classList.remove('hidden');
-            initGame();
-        });
+        startSonomaBtn.addEventListener('click', () => startGameFlow(sonomaGameData));
+        startNapaBtn.addEventListener('click', () => startGameFlow(napaGameData));
         
         nextRoundBtn.addEventListener('click', hideSuccessModal);
         playAgainBtn.addEventListener('click', hideGameOver);
