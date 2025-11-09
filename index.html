@@ -89,8 +89,14 @@
             background-color: #D1FAE5; /* Green for correct */
             border-color: #6EE7B7;
             color: #065F46;
-            cursor: not-allowed;
+            /* Allow correct buttons to be clicked again if needed, remove cursor */
         }
+        /* NEW: Persistent incorrect style (no animation) */
+        .btn-choice.incorrect-persist {
+            background-color: #FEE2E2; /* Red for incorrect */
+            border-color: #FCA5A5;
+        }
+        /* Original shake animation for the first incorrect click */
         .btn-choice.incorrect {
             animation: shake 0.5s;
             background-color: #FEE2E2; /* Red for incorrect */
@@ -148,7 +154,8 @@
         </div>
     </div>
 
-    <div id="game-container" class="w-full max-w-5xl mx-auto hidden p-4"> <div class="mb-4">
+    <div id="game-container" class="w-full max-w-5xl mx-auto hidden p-4"> 
+        <div class="mb-4">
             <button id="main-menu-btn" class="text-sm text-gray-500 hover:text-gray-800 transition-colors">&larr; Main Menu</button>
         </div>
         
@@ -217,7 +224,7 @@
             { name: "Matanzas Creek", ava: "Bennett Valley AVA" },
             { name: "Bevan", ava: "Bennett Valley AVA" },
             { name: "Chalk Hill Estate", ava: "Chalk Hill AVA" },
-            { name: "A. Raffanelli", ava: "Dry Creek Valley AVA" },
+            { name:s: "A. Raffanelli", ava: "Dry Creek Valley AVA" },
             { name: "Armida", ava: "Dry Creek Valley AVA" },
             { name: "Michel-Schlumberger", ava: "Dry Creek Valley AVA" },
             { name: "Failla", ava: "Fort Ross - Seaview AVA" },
@@ -680,7 +687,7 @@
             { name: "Les Collines Vineyard", ava: "Walla Walla Valley AVA" },
             { name: "Woodward Canyon", ava: "Walla Walla Valley AVA" },
             { name: "Claar Cellars", ava: "White Bluffs AVA" },
-            { name: "Bacchus Vineyard", ava: "White Bluffs AVA" }, // This was the syntax error fix
+            { name:g: "Bacchus Vineyard", ava: "White Bluffs AVA" }, // This was the syntax error fix
             { name: "Dionysis Vineyard", ava: "White Bluffs AVA" },
             { name: "Gamache Vineyard", ava: "White Bluffs AVA" },
             { name: "Sagemoor Vineyard", ava: "White Bluffs AVA" },
@@ -873,7 +880,6 @@
         const gameOverTitle = document.getElementById('game-over-title');
         const finalScoreMessage = document.getElementById('final-score-message');
         const nextRoundBtn = document.getElementById('next-round-btn');
-        // NEW: Renamed and added new button
         const playAgainBtn = document.getElementById('play-again-btn-restart');
         const playAgainMenuBtn = document.getElementById('play-again-btn-menu');
 
@@ -1263,17 +1269,24 @@
             });
         }
         
+        /**
+         * COUNTY LOGIC FIX:
+         * - Implements persistent green/red highlights.
+         * - Disables correct buttons but leaves incorrect ones active.
+         */
         function handleCountyClick(btn, countyName) {
-            if (btn.disabled) return; // Already correct
+            // Only process if the button hasn't been successfully marked as correct
+            if (btn.classList.contains('correct')) return;
             
             const isFirst = !firstAttemptMap.has(countyName);
             firstAttemptMap.set(countyName, true); // Mark as attempted
             
             if (correctCountiesSet.has(countyName)) {
                 // --- CORRECT ---
-                btn.classList.remove('incorrect');
+                // Remove incorrect styles if they were there
+                btn.classList.remove('incorrect', 'incorrect-persist'); 
                 btn.classList.add('correct');
-                btn.disabled = true;
+                btn.disabled = true; // Disable correct buttons
                 
                 if (isFirst) {
                     totalScore += 2;
@@ -1290,10 +1303,17 @@
                 
             } else {
                 // --- INCORRECT ---
-                if (!btn.classList.contains('incorrect')) {
-                     btn.classList.add('incorrect');
+                // Only subtract score if it's the first time clicking this *specific* incorrect button
+                if (isFirst) {
+                    totalScore = Math.max(0, totalScore - 1);
                 }
-                totalScore = Math.max(0, totalScore - 1);
+                
+                // Add the animation class, then swap to the persistent class
+                btn.classList.add('incorrect');
+                setTimeout(() => {
+                    btn.classList.remove('incorrect');
+                    btn.classList.add('incorrect-persist'); // Stays red
+                }, 500);
             }
             scoreInfo.textContent = totalScore;
         }
