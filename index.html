@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* Base styles from the Bordeaux example */
+        /* Base styles */
         body {
             font-family: 'Lato', sans-serif;
             background-color: #FDF8F2; /* Creamy background */
@@ -20,46 +20,35 @@
         h1, h2, h3 {
             font-family: 'Playfair Display', serif;
         }
-        /* Using a deep green for the "Sonoma" theme */
-        .theme-text {
-            color: #14532D; /* green-900 */
-        }
-        .theme-bg {
-            background-color: #166534; /* green-800 */
-        }
-        .theme-bg-hover:hover {
-            background-color: #14532D; /* green-900 */
-        }
-        .theme-bg-light {
-            background-color: #F0FDF4; /* green-50 */
-        }
-        .theme-border-light {
-            border-color: #BBF7D0; /* green-200 */
-        }
         
-        /* Using a deep purple/wine for the "Napa" theme */
-        .napa-text {
-            color: #4C1D95; /* violet-900 */
-        }
-        .napa-bg {
-            background-color: #5B21B6; /* violet-800 */
-        }
-        .napa-bg-hover:hover {
-            background-color: #4C1D95; /* violet-900 */
-        }
+        /* Sonoma Theme (Green) */
+        .theme-text { color: #14532D; }
+        .theme-bg { background-color: #166534; }
+        .theme-bg-hover:hover { background-color: #14532D; }
+        .theme-bg-light { background-color: #F0FDF4; }
+        .theme-border-light { border-color: #BBF7D0; }
         
-        /* Using a deep blue for the "Central Coast" theme */
-        .central-text {
-            color: #1E40AF; /* blue-800 */
-        }
-        .central-bg {
-            background-color: #1E40AF; /* blue-800 */
-        }
-        .central-bg-hover:hover {
-            background-color: #1E3A8A; /* blue-900 */
-        }
+        /* Napa Theme (Violet) */
+        .napa-text { color: #4C1D95; }
+        .napa-bg { background-color: #5B21B6; }
+        .napa-bg-hover:hover { background-color: #4C1D95; }
+        
+        /* Central Coast Theme (Blue) */
+        .central-text { color: #1E40AF; }
+        .central-bg { background-color: #1E40AF; }
+        .central-bg-hover:hover { background-color: #1E3A8A; }
 
+        /* Oregon Theme (Emerald) */
+        .oregon-text { color: #047857; }
+        .oregon-bg { background-color: #047857; }
+        .oregon-bg-hover:hover { background-color: #065F46; }
 
+        /* Washington Theme (Sky) */
+        .washington-text { color: #0369A1; }
+        .washington-bg { background-color: #0369A1; }
+        .washington-bg-hover:hover { background-color: #075985; }
+
+        /* Game styles */
         .game-card {
             background-color: #FFFFFF;
             border: 1px solid #DED1C1;
@@ -104,7 +93,7 @@
 
     <!-- Start Game Modal -->
     <div id="start-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
-        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full text-center transform transition-all">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full text-center transform transition-all">
             <h2 class="text-4xl font-bold mb-4 theme-text">AVA Challenge</h2>
             <p class="text-lg mb-6 text-left text-gray-700">Test your knowledge by matching Producers and Vineyards to their correct AVAs.</p>
             <div class="text-left space-y-3 mb-8 theme-bg-light p-4 rounded-lg border theme-border-light">
@@ -117,7 +106,7 @@
                 </ul>
             </div>
             <!-- Game Mode Selection -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                  <button id="start-sonoma-btn" class="w-full theme-bg text-white font-bold py-3 px-4 rounded-lg theme-bg-hover transition-colors text-lg">
                     Sonoma
                 </button>
@@ -126,6 +115,12 @@
                 </button>
                 <button id="start-central-btn" class="w-full central-bg text-white font-bold py-3 px-4 rounded-lg central-bg-hover transition-colors text-lg">
                     Central Coast
+                </button>
+                <button id="start-oregon-btn" class="w-full oregon-bg text-white font-bold py-3 px-4 rounded-lg oregon-bg-hover transition-colors text-lg">
+                    Oregon
+                </button>
+                <button id="start-washington-btn" class="w-full washington-bg text-white font-bold py-3 px-4 rounded-lg washington-bg-hover transition-colors text-lg">
+                    Washington
                 </button>
             </div>
         </div>
@@ -493,7 +488,7 @@
             { name: "Quella", ava: "St. Helena AVA" },
             { name: "Tychson Hill", ava: "St. Helena AVA" },
             { name: "Fay", ava: "Stags Leap District AVA" },
-            { name: "Regusci", ava: "Stags Leap District AVA" },
+            { name:V: "Regusci", ava: "Stags Leap District AVA" },
             { name: "Wappo Hill", ava: "Stags Leap District AVA" },
             { name: "Heron Lake", ava: "Wild Horse Valley AVA" },
             { name: "Ghost Block", ava: "Yountville AVA" },
@@ -561,7 +556,7 @@
             { name: "Laetitia Vineyard", ava: "Arroyo Grande Valley AVA" },
             { name: "Alban Vineyards", ava: "Edna Valley AVA" },
             { name: "Tolosa Winery", ava: "Edna Valley AVA" },
-            { name:E: "Lindquist Vineyard", ava: "Edna Valley AVA" },
+            { name: "Lindquist Vineyard", ava: "Edna Valley AVA" },
             { name: "Epoch Wines", ava: "York Mountain AVA" }
         ];
 
@@ -572,33 +567,161 @@
             { name: "Enz Vineyard", ava: "Lime Kiln Valley AVA" }
         ];
 
+        // --- OREGON DATABASE ---
+        const allOregonData = [
+            { name: "Cowhorn", ava: "Applegate Valley AVA" },
+            { name: "Troon Vineyard", ava: "Applegate Valley AVA" },
+            { name: "Adelsheim", ava: "Chehalem Mountains AVA" },
+            { name: "Ponzi", ava: "Chehalem Mountains AVA" },
+            { name: "Analemma", ava: "Columbia Gorge AVA (Oregon)" },
+            { name: "Hiyu Wine Darm", ava: "Columbia Gorge AVA (Oregon)" },
+            { name: "Atavus Vineyard", ava: "Columbia Gorge AVA (Oregon)" },
+            { name: "Celio Vineyard", ava: "Columbia Gorge AVA (Oregon)" },
+            { name: "Eyrie", ava: "Dundee Hills AVA" },
+            { name: "Cameron", ava: "Dundee Hills AVA" },
+            { name: "Domaine Drouhin", ava: "Dundee Hills AVA" },
+            { name: "Bergström", ava: "Dundee Hills AVA" },
+            { name: "Domaine Serene", ava: "Dundee Hills AVA" },
+            { name: "Lingua Franca", ava: "Eola Amity Hills AVA" },
+            { name: "Walter Scott", ava: "Eola Amity Hills AVA" },
+            { name: "Bethel Heights", ava: "Eola Amity Hills AVA" },
+            { name: "Seven Springs Vineyard", ava: "Eola Amity Hills AVA" },
+            { name: "Jerusalem Hill Vineyard", ava: "Eola Amity Hills AVA" },
+            { name: "Carter Vineyard", ava: "Eola Amity Hills AVA" },
+            { name: "Brandborg", ava: "Elkton Oregon AVA" },
+            { name: "River's Edge", ava: "Elkton Oregon AVA" },
+            { name: "Ponzi Vineyards", ava: "Laurelwood District AVA" },
+            { name: "Dion Vineyards", ava: "Laurelwood District AVA" },
+            { name: "Antiquum Farm", ava: "Lower Long Tom AVA" },
+            { name: "Walnut Ridge Vineyard", ava: "Lower Long Tom AVA" },
+            { name: "Maysara", ava: "McMinnville AVA" },
+            { name: "Brittan", ava: "McMinnville AVA" },
+            { name: "Brittan Vineyards", ava: "McMinnville AVA" },
+            { name: "Illahe Vineyards", ava: "Mount Pisgah-Polk County, Oregon AVA" },
+            { name: "Open Claim Vineyards", ava: "Mount Pisgah-Polk County, Oregon AVA" },
+            { name: "Red Hill Vineyard", ava: "Red Hill Douglas County, Oregon AVA" },
+            { name: "Beaux Frères", ava: "Ribbon Ridge AVA" },
+            { name: "Brick House", ava: "Ribbon Ridge AVA" },
+            { name: "2Hawk Winery", ava: "Rogue Valley AVA" },
+            { name: "Foris", ava: "Rogue Valley AVA" },
+            { name: "Quady North", ava: "Rogue Valley AVA" },
+            { name: "Sawtooth Winery", ava: "Snake River Valley AVA" },
+            { name: "Ste Chapelle", ava: "Snake River Valley AVA" },
+            { name: "Pášxa", ava: "The Rocks of Milton-Freewater AVA" },
+            { name: "Rotie Cellars", ava: "The Rocks of Milton-Freewater AVA" },
+            { name: "River Rock Vineyard", ava: "The Rocks of Milton-Freewater AVA" },
+            { name: "Apolloni VIneyards", ava: "Tualatin Hills AVA" },
+            { name: "David Hill Winery", ava: "Tualatin Hills AVA" },
+            { name: "Abacela", ava: "Umpqua Valley AVA" },
+            { name: "Melrose Vineyards", ava: "Umpqua Valley AVA" },
+            { name: "Johan Vineyards", ava: "Van Duzer Corridor AVA" },
+            { name: "Elk Cove", ava: "Yamhill-Carlton District AVA" },
+            { name: "Soter", ava: "Yamhill-Carlton District AVA" },
+            { name: "Shea Vineyard", ava: "Yamhill-Carlton District AVA" }
+        ];
+
+        // --- WASHINGTON DATABASE ---
+        const allWashingtonData = [
+            { name: "Evergreen Vineyard", ava: "Ancient Lakes of Columbia Valley AVA" },
+            { name: "Kitzke Cellars", ava: "Candy Mountain AVA" },
+            { name: "Atavus Vineyard", ava: "Columbia Gorge AVA (Washington)" },
+            { name: "Celio Vineyard", ava: "Columbia Gorge AVA (Washington)" },
+            { name: "Analemma", ava: "Columbia Gorge AVA (Washington)" },
+            { name: "Hiyu Wine Farm", ava: "Columbia Gorge AVA (Washington)" },
+            { name: "Sagemoor Vineyard", ava: "Columbia Valley AVA" },
+            { name: "Cold Creek Vineyard", ava: "Columbia Valley AVA" },
+            { name: "Stillwater Creek Vineyard", ava: "Columbia Valley AVA" },
+            { name: "Goose Ridge Estate Vineyards", ava: "Goose Gap AVA" },
+            { name: "Champoux Vineyard", ava: "Horse Heaven Hills AVA" },
+            { name: "Canoe Ridge Vineyard", ava: "Horse Heaven Hills AVA" },
+            { name: "McKinley Springs Vineyard", ava: "Horse Heaven Hills AVA" },
+            { name: "Lake Chelan Winery", ava: "Lake Chelan AVA" },
+            { name: "Hard Row to Hoe", ava: "Lake Chelan AVA" },
+            { name: "Colter's Creek Vineyard", ava: "Lewis-Clark Valley AVA" },
+            { name: "Clearwater Canyon", ava: "Lewis-Clark Valley AVA" },
+            { name: "Naches Heights Vineyards", ava: "Naches Heights AVA" },
+            { name: "Bainbridge Island Vineyards", ava: "Puget Sound AVA" },
+            { name: "Bayernmoore", ava: "Puget Sound AVA" },
+            { name: "Vashon Winery", ava: "Puget Sound AVA" },
+            { name: "Kennedy Shah", ava: "Rattlesnake Hills AVA" },
+            { name: "Savage Grace", ava: "Rattlesnake Hills AVA" },
+            { name: "Hyatt Vineyards", ava: "Rattlesnake Hills AVA" },
+            { name: "Ciel du Cheval Vineyard", ava: "Red Mountain AVA" },
+            { name: "Col Solare", ava: "Red Mountain AVA" },
+            { name: "Kiona Vineyard", ava: "Red Mountain AVA" },
+            { name: "Klipson Vineyard", ava: "Red Mountain AVA" },
+            // Rocky Reach AVA has no data
+            { name: "Stillwater Creek Vineyard", ava: "Royal Slope AVA" },
+            { name: "Lawrence Vineyard", ava: "Royal Slope AVA" },
+            { name: "Frenchman Hills Vineyard", ava: "Royal Slope AVA" },
+            { name: "Stoneridge Vineyard", ava: "Royal Slope AVA" },
+            { name: "Harrison Hill Vineyard", ava: "Snipes Mountain AVA" },
+            { name: "Upland Vineyard", ava: "Snipes Mountain AVA" },
+            { name: "Chateau Saint Michelle (Bourne of Fire)", ava: "The Burn of Columbia Valley AVA" },
+            { name: "Milbrandt Vineyard", ava: "Wahluke Slope AVA" },
+            { name: "Stone Tree Vineyard", ava: "Wahluke Slope AVA" },
+            { name: "Fox Estate vineyards", ava: "Wahluke Slope AVA" },
+            { name: "Leonetti Cellar", ava: "Walla Walla Valley AVA" },
+            { name: "Cayuse", ava: "Walla Walla Valley AVA" },
+            { name: "L’Ecole 41", ava: "Walla Walla Valley AVA" },
+            { name: "Seven Hills Vineyard", ava: "Walla Walla Valley AVA" },
+            { name: "Pepper Bridge Vineyard", ava: "Walla Walla Valley AVA" },
+            { name: "Les Collines Vineyard", ava: "Walla Walla Valley AVA" },
+            { name: "Woodward Canyon", ava: "Walla Walla Valley AVA" },
+            { name: "Claar Cellars", ava: "White Bluffs AVA" },
+            { name: "Bacchus Vineyard", ava: "White Bluffs AVA" },
+            { name: "Dionysis Vineyard", ava: "White Bluffs AVA" },
+            { name: "Gamache Vineyard", ava: "White Bluffs AVA" },
+            { name: "Sagemoor Vineyard", ava: "White Bluffs AVA" },
+            { name: "Otis Vineyard", ava: "Yakima Valley AVA" },
+            { name: "Boushey Vineyard", ava: "Yakima Valley AVA" },
+            { name: "Red Willow Vineyard", ava: "Yakima Valley AVA" }
+        ];
+
         // --- GAME DATA WRAPPERS ---
         const sonomaGameData = {
             title: "Sonoma AVA Master",
             producers: sonomaProducersData,
             vineyards: sonomaVineyardsData,
-            theme: "theme-text" // Green
+            theme: "theme-text", // Green
+            totalRounds: 20
         };
         
         const napaGameData = {
             title: "Napa AVA Master",
             producers: napaProducersData,
             vineyards: napaVineyardsData,
-            theme: "napa-text" // Purple
+            theme: "napa-text", // Purple
+            totalRounds: 20
         };
 
         const allCentralData = [...centralProducersData, ...centralVineyardsData];
         const centralGameData = {
             title: "Central Coast Master",
             allData: allCentralData, // Combined list
-            theme: "central-text" // Blue
+            theme: "central-text", // Blue
+            totalRounds: 20
+        };
+
+        const oregonGameData = {
+            title: "Oregon AVA Master",
+            allData: allOregonData,
+            theme: "oregon-text", // Emerald
+            totalRounds: 10
+        };
+
+        const washingtonGameData = {
+            title: "Washington AVA Master",
+            allData: allWashingtonData,
+            theme: "washington-text", // Sky
+            totalRounds: 10
         };
 
         // --- GAME STATE ---
         let currentRound = 1;
         let totalScore = 0;
         let maxPossibleScore = 0;
-        const totalRounds = 20;
+        let totalRounds = 20; // Will be set by startGameFlow
         const itemsPerRound = 5;
 
         let selectedLeft = null;
@@ -613,6 +736,8 @@
         const startSonomaBtn = document.getElementById('start-sonoma-btn');
         const startNapaBtn = document.getElementById('start-napa-btn');
         const startCentralBtn = document.getElementById('start-central-btn');
+        const startOregonBtn = document.getElementById('start-oregon-btn');
+        const startWashingtonBtn = document.getElementById('start-washington-btn');
         const mainMenuBtn = document.getElementById('main-menu-btn');
         const gameTitle = document.getElementById('game-title');
         const scoreInfo = document.getElementById('score-info');
@@ -643,7 +768,7 @@
             let dataSource;
             
             if (activeGameData.allData) {
-                // Use combined list for Central Coast
+                // Use combined list for Central Coast, Oregon, Washington
                 dataSource = activeGameData.allData;
                 columnTitle.textContent = "Producers & Vineyards";
             } else {
@@ -702,7 +827,7 @@
         /** Applies correct theme colors */
         function applyTheme() {
             const themeClass = activeGameData.theme;
-            const themes = ["theme-text", "napa-text", "central-text"];
+            const themes = ["theme-text", "napa-text", "central-text", "oregon-text", "washington-text"];
             const otherThemes = themes.filter(t => t !== themeClass);
             
             // Apply theme to titles
@@ -715,7 +840,9 @@
             const buttonThemes = {
                 "theme-text": ["theme-bg", "theme-bg-hover"],
                 "napa-text": ["napa-bg", "napa-bg-hover"],
-                "central-text": ["central-bg", "central-bg-hover"]
+                "central-text": ["central-bg", "central-bg-hover"],
+                "oregon-text": ["oregon-bg", "oregon-bg-hover"],
+                "washington-text": ["washington-bg", "washington-bg-hover"]
             };
             const [bgClass, hoverClass] = buttonThemes[themeClass];
             const otherBg = Object.values(buttonThemes).map(t => t[0]).filter(c => c !== bgClass);
@@ -731,6 +858,7 @@
 
         function startGameFlow(gameData) {
             activeGameData = gameData;
+            totalRounds = activeGameData.totalRounds; // Set total rounds for this game
             gameTitle.textContent = activeGameData.title;
             applyTheme();
             startModal.classList.add('hidden');
@@ -950,6 +1078,8 @@
         startSonomaBtn.addEventListener('click', () => startGameFlow(sonomaGameData));
         startNapaBtn.addEventListener('click', () => startGameFlow(napaGameData));
         startCentralBtn.addEventListener('click', () => startGameFlow(centralGameData));
+S   tartOregonBtn.addEventListener('click', () => startGameFlow(oregonGameData));
+        startWashingtonBtn.addEventListener('click', () => startGameFlow(washingtonGameData));
         mainMenuBtn.addEventListener('click', goToMainMenu);
         
         nextRoundBtn.addEventListener('click', hideSuccessModal);
